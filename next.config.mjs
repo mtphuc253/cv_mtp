@@ -3,9 +3,8 @@ const nextConfig = {
   images: {
     domains: [
       "camo.githubusercontent.com",
-      "firebasestorage.googleapis.com" 
-    ],
-  },
+      "firebasestorage.googleapis.com"
+    ]
+  }
 };
-
 export default nextConfig;

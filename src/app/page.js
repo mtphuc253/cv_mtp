@@ -1,15 +1,37 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client"
 
-import React, { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import PropTypes from "prop-types"
 import { motion } from "framer-motion"
-import {
-  SidebarProvider,
-} from "@/components/ui/sidebar"
+import { SidebarProvider } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
-import { Github, Linkedin, Facebook, ExternalLink, MapPin, Phone, Mail, Calendar, ArrowUpRight, Sparkles, UserRound, ChevronRight, BriefcaseBusiness, CalendarDays, Wrench, GraduationCap, Heart, BookOpenText, Award, Code2, Database, Globe, Smartphone, Server, Palette, GitBranch, Cloud, Zap } from 'lucide-react'
+import {
+  Github,
+  ExternalLink,
+  MapPin,
+  Phone,
+  Mail,
+  Sparkles,
+  UserRound,
+  ChevronRight,
+  BriefcaseBusiness,
+  CalendarDays,
+  Wrench,
+  GraduationCap,
+  Heart,
+  Award,
+  Code2,
+  Database,
+  Globe,
+  Smartphone,
+  Server,
+  Palette,
+  GitBranch,
+  Cloud,
+  Zap,
+} from "lucide-react"
 import Image from "next/image"
 import { AppSidebar } from "@/components/layout/app-sidebar"
 
@@ -33,8 +55,8 @@ export default function Page() {
     const handleMouseMove = (e) => {
       setMousePosition({ x: e.clientX, y: e.clientY })
     }
-    window.addEventListener('mousemove', handleMouseMove)
-    return () => window.removeEventListener('mousemove', handleMouseMove)
+    window.addEventListener("mousemove", handleMouseMove)
+    return () => window.removeEventListener("mousemove", handleMouseMove)
   }, [])
 
   // Observe sections for active navigation
@@ -51,7 +73,7 @@ export default function Page() {
         root: null,
         rootMargin: "-20% 0px -20% 0px",
         threshold: [0.5, 0.75, 1],
-      }
+      },
     )
 
     sections.forEach(({ id }) => {
@@ -79,31 +101,36 @@ export default function Page() {
     >
       {/* Enhanced overlay for better text readability */}
       <div className="fixed inset-0 bg-slate-900/20" />
-      
+
       {/* Multiple animated gradient overlays for more lighting effects */}
       <div className="fixed inset-0 bg-gradient-to-br from-cyan-500/8 via-transparent to-blue-500/8 animate-pulse" />
-      <div className="fixed inset-0 bg-gradient-to-tl from-purple-500/5 via-transparent to-teal-500/5 animate-pulse" style={{ animationDelay: '1s' }} />
-      <div className="fixed inset-0 bg-gradient-to-tr from-blue-500/6 via-transparent to-cyan-500/6 animate-pulse" style={{ animationDelay: '2s' }} />
-      
+      <div
+        className="fixed inset-0 bg-gradient-to-tl from-purple-500/5 via-transparent to-teal-500/5 animate-pulse"
+        style={{ animationDelay: "1s" }}
+      />
+      <div
+        className="fixed inset-0 bg-gradient-to-tr from-blue-500/6 via-transparent to-cyan-500/6 animate-pulse"
+        style={{ animationDelay: "2s" }}
+      />
+
       {/* Enhanced grid pattern overlay */}
       <div className="fixed inset-0 opacity-15 [background-image:linear-gradient(rgba(6,182,212,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.1)_1px,transparent_1px)] [background-size:50px_50px]" />
-      
+
       {/* Floating light orbs */}
       <div className="fixed top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
-      <div className="fixed bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }} />
+      <div
+        className="fixed bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"
+        style={{ animationDelay: "1.5s" }}
+      />
 
       <SidebarProvider>
-        <AppSidebar
-          sections={sections}
-          activeId={activeId}
-          onNavigate={handleNavigate}
-        />
+        <AppSidebar sections={sections} activeId={activeId} onNavigate={handleNavigate} />
         <main
           ref={mainRef}
           className={cn(
             "scroll-smooth relative z-10",
             "ml-64 w-[calc(100%-16rem)]", // Account for 256px (w-64) sidebar width
-            "px-4 pb-24 pt-12 md:px-8 lg:px-12"
+            "px-4 pb-24 pt-12 md:px-8 lg:px-12",
           )}
         >
           <About activeId={activeId} />
@@ -121,7 +148,7 @@ export default function Page() {
 
 function Section({ id, title, icon: Icon, children, activeId }) {
   const isActive = activeId === id
-  
+
   return (
     <motion.section
       id={id}
@@ -133,48 +160,46 @@ function Section({ id, title, icon: Icon, children, activeId }) {
       aria-labelledby={`${id}-title`}
     >
       <div className="mb-8 flex items-center gap-3">
-        <div className={cn(
-          "flex h-12 w-12 items-center justify-center rounded-xl ring-1 backdrop-blur-sm transition-all duration-500",
-          isActive 
-            ? "bg-gradient-to-br from-cyan-500/30 to-blue-500/30 ring-cyan-400/50 shadow-lg shadow-cyan-500/20" 
-            : "bg-gradient-to-br from-cyan-500/20 to-blue-500/20 ring-white/10"
-        )}>
-          <Icon className={cn(
-            "h-6 w-6 transition-colors duration-500",
-            isActive ? "text-cyan-200" : "text-cyan-300"
-          )} />
+        <div
+          className={cn(
+            "flex h-12 w-12 items-center justify-center rounded-xl ring-1 backdrop-blur-sm transition-all duration-500",
+            isActive
+              ? "bg-gradient-to-br from-cyan-500/30 to-blue-500/30 ring-cyan-400/50 shadow-lg shadow-cyan-500/20"
+              : "bg-gradient-to-br from-cyan-500/20 to-blue-500/20 ring-white/10",
+          )}
+        >
+          <Icon
+            className={cn("h-6 w-6 transition-colors duration-500", isActive ? "text-cyan-200" : "text-cyan-300")}
+          />
         </div>
         <h2
           id={`${id}-title`}
           className={cn(
             "text-3xl font-bold tracking-tight transition-colors duration-500",
-            isActive ? "text-cyan-100" : "text-white"
+            isActive ? "text-cyan-100" : "text-white",
           )}
         >
           {title}
         </h2>
-        <div className={cn(
-          "flex-1 h-px transition-all duration-500",
-          isActive 
-            ? "bg-gradient-to-r from-cyan-400/70 to-transparent" 
-            : "bg-gradient-to-r from-cyan-500/50 to-transparent"
-        )} />
+        <div
+          className={cn(
+            "flex-1 h-px transition-all duration-500",
+            isActive
+              ? "bg-gradient-to-r from-cyan-400/70 to-transparent"
+              : "bg-gradient-to-r from-cyan-500/50 to-transparent",
+          )}
+        />
       </div>
-      
+
       {/* Content with enhanced glow effects */}
-      <div className={cn(
-        "relative transition-all duration-700",
-        isActive && "drop-shadow-2xl"
-      )}>
+      <div className={cn("relative transition-all duration-700", isActive && "drop-shadow-2xl")}>
         {isActive && (
           <>
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-blue-500/5 to-cyan-500/10 rounded-3xl animate-pulse blur-sm" />
             <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/5 to-blue-400/5 rounded-3xl" />
           </>
         )}
-        <div className="relative">
-          {children}
-        </div>
+        <div className="relative">{children}</div>
       </div>
     </motion.section>
   )
@@ -200,9 +225,7 @@ function About({ activeId }) {
               <h1 className="bg-gradient-to-r from-white via-cyan-200 to-blue-200 bg-clip-text text-4xl font-extrabold tracking-tight text-transparent lg:text-5xl">
                 Mai Tan Phuc
               </h1>
-              <div className="mt-2 text-lg font-semibold text-cyan-300">
-                Full-Stack Developer
-              </div>
+              <div className="mt-2 text-lg font-semibold text-cyan-300">Full-Stack Developer</div>
               <div className="mt-2 flex items-center justify-center gap-2 text-gray-300">
                 <MapPin className="h-4 w-4 text-cyan-400" />
                 <span>Go Vap, Ho Chi Minh City</span>
@@ -228,19 +251,20 @@ function About({ activeId }) {
             </div>
             <div className="flex items-center gap-4">
               <SocialLink icon={Github} label="GitHub" href="https://github.com/mtphuc253" />
-              <SocialLink icon={IconLinkedIn} label="LinkedIn" href="www.linkedin.com/in/tan-phuc-mai-653111309" />
+              <SocialLink
+                icon={IconLinkedIn}
+                label="LinkedIn"
+                href="https://www.linkedin.com/in/tan-phuc-mai-653111309"
+              />
               <SocialLink icon={IconFacebook} label="Facebook" href="https://www.facebook.com/maitanphuc.724777/" />
             </div>
           </div>
 
           <div className="space-y-6 text-gray-300">
-            <p className="text-xl text-white leading-relaxed">
-              Hi there, welcome to look at my profile!
-            </p>
+            <p className="text-xl text-white leading-relaxed">Hi there, welcome to look at my profile!</p>
             <p className="text-lg leading-relaxed">
-              Enthusiastic and hardworking full-stack developer with over 2 years of
-              experience studying and working in ReactJS/NodeJS, specializing in
-              building custom web and mobile identity solutions, and improving user
+              Enthusiastic and hardworking full-stack developer with over 2 years of experience studying and working in
+              ReactJS/NodeJS, specializing in building custom web and mobile identity solutions, and improving user
               experience for systems.
             </p>
             <div className="grid gap-4 md:grid-cols-2">
@@ -250,9 +274,8 @@ function About({ activeId }) {
                   <span className="font-semibold text-white">Front-end</span>
                 </div>
                 <p className="text-sm text-gray-300 leading-relaxed">
-                  I have experience working with ReactJS (NextJS, Hook, Redux Toolkit),
-                  Material UI, TailwindCSS, Shadcn/ui, Bootstrap, Axios, and other
-                  technologies.
+                  I have experience working with ReactJS (NextJS, Hook, Redux Toolkit), Material UI, TailwindCSS,
+                  Shadcn/ui, Bootstrap, Axios, and other technologies.
                 </p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-slate-800/40 p-6 backdrop-blur-sm hover:shadow-lg hover:shadow-cyan-500/10 transition-all">
@@ -261,8 +284,8 @@ function About({ activeId }) {
                   <span className="font-semibold text-white">Back-end</span>
                 </div>
                 <p className="text-sm text-gray-300 leading-relaxed">
-                  I have experience working with Node.JS, TypeScript, ExpressJS, MongoDB,
-                  MicrosoftSQL, Firebase and other technologies.
+                  I have experience working with Node.JS, TypeScript, ExpressJS, MongoDB, MicrosoftSQL, Firebase and
+                  other technologies.
                 </p>
               </div>
             </div>
@@ -285,7 +308,7 @@ function Experience({ activeId }) {
         "Clarified business requirements in project, contributing to refined feature implementation.",
         "Ensured cross-browser compatibility for the system across browsers and platforms, enhancing accessibility.",
         "Increase system efficiency by 10% by optimizing code, rerendering interfaces properly, and avoiding redundant API calls.",
-        "Contributed to designing and refining user interface components based on feedback and project needs."
+        "Contributed to designing and refining user interface components based on feedback and project needs.",
       ],
       technologies: ["ReactJS", "Redux", "Firebase", "React Hooks"],
     },
@@ -300,18 +323,18 @@ function Experience({ activeId }) {
         "Optimized existing features and added new functionalities to improve user experience.",
         "Upgraded and addressed several gaps in the business requirements to better align with project goals.",
         "Designed and enhanced a user-friendly UI for the web application.",
-        "Optimized the interface to ensure responsiveness on mobile devices."
+        "Optimized the interface to ensure responsiveness on mobile devices.",
       ],
       technologies: ["NextJS", "NodeJS", "Express", "SEO"],
-    }
+    },
   ]
 
   return (
     <Section id="experience" title="Experience" icon={BriefcaseBusiness} activeId={activeId}>
       <div className="grid gap-8">
         {experiences.map((exp, index) => (
-          <motion.div 
-            key={index} 
+          <motion.div
+            key={index}
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -322,12 +345,8 @@ function Experience({ activeId }) {
             <div className="relative">
               <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
                 <div>
-                  <h3 className="text-2xl font-bold text-white mb-2">
-                    {exp.title}
-                  </h3>
-                  <div className="text-lg text-cyan-300 font-semibold mb-1">
-                    {exp.company}
-                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-2">{exp.title}</h3>
+                  <div className="text-lg text-cyan-300 font-semibold mb-1">{exp.company}</div>
                   <div className="text-gray-400">{exp.location}</div>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-300 bg-slate-800/60 px-4 py-2 rounded-full border border-white/10">
@@ -335,7 +354,7 @@ function Experience({ activeId }) {
                   <span>{exp.period}</span>
                 </div>
               </div>
-              
+
               <ul className="space-y-3 mb-6">
                 {exp.description.map((desc, i) => (
                   <li key={i} className="flex items-start gap-3 text-gray-300">
@@ -344,7 +363,7 @@ function Experience({ activeId }) {
                   </li>
                 ))}
               </ul>
-              
+
               <div className="flex flex-wrap gap-2">
                 {exp.technologies.map((tech) => (
                   <span
@@ -372,58 +391,58 @@ function Projects({ activeId }) {
       description: [
         "A real-time system that helps supervisors and students manage capstone projects efficiently:",
         "Supervisors can create/approve topics, manage groups, and review results, while students can form groups, select topics, and manage tasks.",
-        "The system also handles defense scheduling and sends automated notifications/emails."
+        "The system also handles defense scheduling and sends automated notifications/emails.",
       ],
       technologies: {
         frontend: ["Next.js", "TypeScript", "React Hook Form", "ShadcnUI"],
         backend: ["ASP.NET"],
         database: ["PostgreSQL"],
-        others: ["AWS", "Sentence Transformer AI"]
+        others: ["AWS", "Sentence Transformer AI"],
       },
       link: "https://github.com/SP25SE148/FUCapstone_FE.git",
       images: [
         "https://camo.githubusercontent.com/dd9dffdbb4bef4e49b65ab6799babb3f1e89fa14e928908bca582f32654f5a34/68747470733a2f2f666972656261736573746f726167652e676f6f676c65617069732e636f6d2f76302f622f63726561746573796c6c6162757375706c6f6164696e672e61707073706f742e636f6d2f6f2f4655435f46455f53637265656e73686f747325324653637265656e73686f74253230323032352d30352d32332532303039313333392e706e673f616c743d6d6564696126746f6b656e3d31393038613838322d363034362d346631312d393139372d346133653165303363623861",
-        "https://camo.githubusercontent.com/53e29225a0c287e0f0de4e71a1feffda5eb006b1d0d0e8de539b51d605263c43/68747470733a2f2f666972656261736573746f726167652e676f6f676c65617069732e636f6d2f76302f622f63726561746573796c6c6162757375706c6f6164696e672e61707073706f742e636f6d2f6f2f4655435f46455f53637265656e73686f74732532464d616e616765725f546f7069635f44657461696c2e706e673f616c743d6d6564696126746f6b656e3d34353239633463322d316532652d343831312d623834332d333130383834353135333534", 
+        "https://camo.githubusercontent.com/53e29225a0c287e0f0de4e71a1feffda5eb006b1d0d0e8de539b51d605263c43/68747470733a2f2f666972656261736573746f726167652e676f6f676c65617069732e636f6d2f76302f622f63726561746573796c6c6162757375706c6f6164696e672e61707073706f742e636f6d2f6f2f4655435f46455f53637265656e73686f74732532464d616e616765725f546f7069635f44657461696c2e706e673f616c743d6d6564696126746f6b656e3d34353239633463322d316532652d343831312d623834332d333130383834353135333534",
         "https://camo.githubusercontent.com/4216cd8e6ef69d527536cbbf6877f941b5ed5ff7ebb2d5ae5178e53cc2fd0d23/68747470733a2f2f666972656261736573746f726167652e676f6f676c65617069732e636f6d2f76302f622f63726561746573796c6c6162757375706c6f6164696e672e61707073706f742e636f6d2f6f2f4655435f46455f53637265656e73686f747325324653757065727669736f725f47726f7570496e666f2e706e673f616c743d6d6564696126746f6b656e3d30336565633836652d373931652d346339352d383365362d343462636537386631323962",
-        "https://camo.githubusercontent.com/bef67633f5441e977046092abdf0e1ae7d9abea268820c3fd0b38f9d44b1934a/68747470733a2f2f666972656261736573746f726167652e676f6f676c65617069732e636f6d2f76302f622f63726561746573796c6c6162757375706c6f6164696e672e61707073706f742e636f6d2f6f2f4655435f46455f53637265656e73686f747325324653747564656e745f4d7967726f75702e706e673f616c743d6d6564696126746f6b656e3d64363833373261362d356561662d343932362d386332392d363831346437363763366264"
+        "https://camo.githubusercontent.com/bef67633f5441e977046092abdf0e1ae7d9abea268820c3fd0b38f9d44b1934a/68747470733a2f2f666972656261736573746f726167652e676f6f676c65617069732e636f6d2f76302f622f63726561746573796c6c6162757375706c6f6164696e672e61707073706f742e636f6d2f6f2f4655435f46455f53637265656e73686f747325324653747564656e745f4d7967726f75702e706e673f616c743d6d6564696126746f6b656e3d64363833373261362d356561662d343932362d386332392d363831346437363763366264",
       ],
-      featured: true
+      featured: true,
     },
     {
       title: "TMG — Task Management Group",
       subtitle: "Organize group tasks, stay productive and manage your group daily tasks efficiently",
-      role: "Fullstack Developer", 
+      role: "Fullstack Developer",
       description: [
         "Organize group tasks, stay productive and manage your group daily tasks efficiently with intuitive platform:",
         "The system allows team members to manage members, assign tasks, update and manage progress, and calculate team performance statistics",
-        "Export files based on statistics on the system"
+        "Export files based on statistics on the system",
       ],
       technologies: {
         frontend: ["ReactJS", "React Hook Form", "ShadcnUI"],
         backend: ["NodeJS", "Express"],
         database: ["MongoDB"],
-        others: ["Firebase", "XLSX"]
+        others: ["Firebase", "XLSX"],
       },
       link: "https://github.com/mtphuc253/Manage_Task_Groups_Fullstack.git",
       images: [
         "https://camo.githubusercontent.com/fcf49b0f95ddf3ab56378ba14b6584337cb53c9b644d96d8a8256f56b95130fa/68747470733a2f2f666972656261736573746f726167652e676f6f676c65617069732e636f6d2f76302f622f766976752d696d6167652e61707073706f742e636f6d2f6f2f4d5447253230496d6167652532464c6f67696e2e706e673f616c743d6d6564696126746f6b656e3d61613338616265352d393162322d346662652d393939302d306535633661616137613862",
         "https://camo.githubusercontent.com/66708d64d83e4b750cf7cfa0fab32dbe24daf79f6586bb02ec5da0bdbc349b12/68747470733a2f2f666972656261736573746f726167652e676f6f676c65617069732e636f6d2f76302f622f766976752d696d6167652e61707073706f742e636f6d2f6f2f4d5447253230496d61676525324641646d696e44617368626f6172642831292e706e673f616c743d6d6564696126746f6b656e3d32323432343961642d396631302d343761322d623635362d383332376632396561356432",
         "https://camo.githubusercontent.com/246eb8ea347f434e1ad02077b29a59472679ba969f66995defb1edf8ad97f340/68747470733a2f2f666972656261736573746f726167652e676f6f676c65617069732e636f6d2f76302f622f766976752d696d6167652e61707073706f742e636f6d2f6f2f4d5447253230496d6167652532464d616e6167655461736b2832292e706e673f616c743d6d6564696126746f6b656e3d35623064643364392d663930312d346133352d383864362d613938336362396432663261",
-        "https://camo.githubusercontent.com/12f5b80cc3622936ff60e47838752b743b8d5b07967e6c7eda6c0765bcb170e7/68747470733a2f2f666972656261736573746f726167652e676f6f676c65617069732e636f6d2f76302f622f766976752d696d6167652e61707073706f742e636f6d2f6f2f4d5447253230496d6167652532464d616e616765557365722e706e673f616c743d6d6564696126746f6b656e3d37363630646435362d393064622d343965632d393638322d383666333930633235636362"
-      ]
+        "https://camo.githubusercontent.com/12f5b80cc3622936ff60e47838752b743b8d5b07967e6c7eda6c0765bcb170e7/68747470733a2f2f666972656261736573746f726167652e676f6f676c65617069732e636f6d2f76302f622f766976752d696d6167652e61707073706f742e636f6d2f6f2f4d5447253230496d6167652532464d616e616765557365722e706e673f616c743d6d6564696126746f6b656e3d37363630646435362d393064622d343965632d393638322d383666333930633235636362",
+      ],
     },
     {
       title: "KS — Koi Store Mobile App",
       subtitle: "Mobile app for Koi fish buying, selling, and delivery management",
       role: "Fullstack Developer",
       description: [
-        "Mobile app for Koi fish buying, selling, and delivery management with consignment features and revenue statistics for shop owners."
+        "Mobile app for Koi fish buying, selling, and delivery management with consignment features and revenue statistics for shop owners.",
       ],
       technologies: {
         frontend: ["React Native", "React Hook Form"],
         backend: ["NodeJS", "Express"],
         database: ["MongoDB"],
-        others: ["ZaloPay"]
+        others: ["ZaloPay"],
       },
       link: "https://github.com/mtphuc253/KoiStore_Mobile_App",
       images: [
@@ -432,21 +451,17 @@ function Projects({ activeId }) {
         "https://camo.githubusercontent.com/1fd4d5ca9666aeb7ff74b34837dddc034740a73c4361a0451e03ec36ca5ae1c0/68747470733a2f2f666972656261736573746f726167652e676f6f676c65617069732e636f6d2f76302f622f63726561746573796c6c6162757375706c6f6164696e672e61707073706f742e636f6d2f6f2f375f566965775f64696172795f64657461696c2e6a70673f616c743d6d6564696126746f6b656e3d63616338356263302d633632342d343764372d613835352d306265396466636265343332",
         "https://camo.githubusercontent.com/c4d2e4303941846b10837c22715e446ff7834dcb50744ea8911868ecab29c2cc/68747470733a2f2f666972656261736573746f726167652e676f6f676c65617069732e636f6d2f76302f622f63726561746573796c6c6162757375706c6f6164696e672e61707073706f742e636f6d2f6f2f31305f486f775f6d7563685f7370656e642e6a70673f616c743d6d6564696126746f6b656e3d35643430666637342d363465632d343136312d386264392d316231636431306632353361",
         "https://camo.githubusercontent.com/6a49a04a106199aa2903f23c7fbf110ec45e8468433432b6141fd7ca01a7d8ef/68747470733a2f2f666972656261736573746f726167652e676f6f676c65617069732e636f6d2f76302f622f63726561746573796c6c6162757375706c6f6164696e672e61707073706f742e636f6d2f6f2f31345f5363686564756c655f67656e6572617465645f66726f6d5f757365725f696e7075742e6a70673f616c743d6d6564696126746f6b656e3d63643732316431352d393763332d343330332d383961382d326366646261313139633965",
-        "https://camo.githubusercontent.com/10419a622b4d11e1571af48ce2d4cfd8405e7c1110580dbdc6b4400540a4fbd2/68747470733a2f2f666972656261736573746f726167652e676f6f676c65617069732e636f6d2f76302f622f63726561746573796c6c6162757375706c6f6164696e672e61707073706f742e636f6d2f6f2f31355f4368616e67655f7468656d652e6a70673f616c743d6d6564696126746f6b656e3d38333338303431302d663035322d346561362d616238632d313532616530383337333439"
+        "https://camo.githubusercontent.com/10419a622b4d11e1571af48ce2d4cfd8405e7c1110580dbdc6b4400540a4fbd2/68747470733a2f2f666972656261736573746f726167652e676f6f676c65617069732e636f6d2f76302f622f63726561746573796c6c6162757375706c6f6164696e672e61707073706f742e636f6d2f6f2f31355f4368616e67655f7468656d652e6a70673f616c743d6d6564696126746f6b656e3d38333338303431302d663035322d346561362d616238632d313532616530383337333439",
       ],
-      isMobile: true
-    }
+      isMobile: true,
+    },
   ]
 
   return (
     <Section id="projects" title="Highlight Projects" icon={Sparkles} activeId={activeId}>
       <div className="space-y-12">
         {projects.map((project, index) => (
-          <ProjectCard
-            key={index}
-            project={project}
-            index={index}
-          />
+          <ProjectCard key={index} project={project} index={index} />
         ))}
       </div>
     </Section>
@@ -454,163 +469,197 @@ function Projects({ activeId }) {
 }
 
 function ProjectCard({ project, index }) {
+  const [selectedImage, setSelectedImage] = useState(null)
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
-      className={cn(
-        "overflow-hidden rounded-3xl border border-white/10 backdrop-blur-xl shadow-2xl transition-all duration-500 hover:shadow-cyan-500/20",
-        project.featured 
-          ? "bg-gradient-to-br from-cyan-500/10 to-blue-500/10 ring-1 ring-cyan-400/20 shadow-cyan-500/10" 
-          : "bg-slate-900/60 hover:shadow-cyan-500/10"
-      )}
-    >
-      {project.featured && (
-        <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 px-6 py-2 border-b border-cyan-400/20">
-          <div className="flex items-center gap-2 text-sm font-semibold text-cyan-200">
-            <Sparkles className="h-4 w-4" />
-            Featured Project
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: index * 0.1 }}
+        className={cn(
+          "overflow-hidden rounded-3xl border border-white/10 backdrop-blur-xl shadow-2xl transition-all duration-500 hover:shadow-cyan-500/20",
+          project.featured
+            ? "bg-gradient-to-br from-cyan-500/10 to-blue-500/10 ring-1 ring-cyan-400/20 shadow-cyan-500/10"
+            : "bg-slate-900/60 hover:shadow-cyan-500/10",
+        )}
+      >
+        {project.featured && (
+          <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 px-6 py-2 border-b border-cyan-400/20">
+            <div className="flex items-center gap-2 text-sm font-semibold text-cyan-200">
+              <Sparkles className="h-4 w-4" />
+              Featured Project
+            </div>
           </div>
-        </div>
-      )}
-      
-      <div className="p-8">
-        <div className="grid gap-8 lg:grid-cols-[1fr_1fr]">
-          <div className="space-y-6">
-            <div>
-              <Link
+        )}
+
+        <div className="p-8">
+          <div className="grid gap-8 lg:grid-cols-[1fr_1fr]">
+            <div className="space-y-6">
+              <div>
+                <Link
+                  href={project.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-2xl font-bold text-white hover:text-cyan-300 transition-colors group"
+                >
+                  {project.title}
+                  <ExternalLink className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </Link>
+                <div className="mt-1 text-gray-400">{project.subtitle}</div>
+                <div className="mt-2 text-sm text-cyan-300 font-semibold">Role: {project.role}</div>
+              </div>
+
+              <ul className="space-y-3">
+                {project.description.map((desc, i) => (
+                  <li key={i} className="flex items-start gap-3 text-gray-300">
+                    <ChevronRight className="mt-1 h-4 w-4 text-cyan-400 flex-shrink-0" />
+                    <span className="leading-relaxed">{desc}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-sm font-semibold text-cyan-300 mb-2 flex items-center gap-2">
+                    <Globe className="h-4 w-4" />
+                    Frontend
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {project.technologies.frontend.map((tech) => (
+                      <span
+                        key={tech}
+                        className="inline-flex items-center rounded-lg border border-cyan-400/30 bg-cyan-500/20 px-3 py-1 text-xs text-cyan-200"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-semibold text-blue-300 mb-2 flex items-center gap-2">
+                    <Server className="h-4 w-4" />
+                    Backend
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {project.technologies.backend.map((tech) => (
+                      <span
+                        key={tech}
+                        className="inline-flex items-center rounded-lg border border-blue-400/30 bg-blue-500/20 px-3 py-1 text-xs text-blue-200"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-semibold text-green-300 mb-2 flex items-center gap-2">
+                    <Database className="h-4 w-4" />
+                    Database
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {project.technologies.database.map((tech) => (
+                      <span
+                        key={tech}
+                        className="inline-flex items-center rounded-lg border border-green-400/30 bg-green-500/20 px-3 py-1 text-xs text-green-200"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-semibold text-purple-300 mb-2 flex items-center gap-2">
+                    <Cloud className="h-4 w-4" />
+                    Others
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {project.technologies.others.map((tech) => (
+                      <span
+                        key={tech}
+                        className="inline-flex items-center rounded-lg border border-purple-400/30 bg-purple-500/20 px-3 py-1 text-xs text-purple-200"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <a
                 href={project.link}
                 target="_blank"
-                className="inline-flex items-center gap-2 text-2xl font-bold text-white hover:text-cyan-300 transition-colors group"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-slate-800/60 px-6 py-3 text-sm text-gray-200 hover:bg-slate-700/60 hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-500/20 transition-all"
               >
-                {project.title}
-                <ExternalLink className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </Link>
-              <div className="mt-1 text-gray-400">{project.subtitle}</div>
-              <div className="mt-2 text-sm text-cyan-300 font-semibold">
-                Role: {project.role}
-              </div>
-            </div>
-            
-            <ul className="space-y-3">
-              {project.description.map((desc, i) => (
-                <li key={i} className="flex items-start gap-3 text-gray-300">
-                  <ChevronRight className="mt-1 h-4 w-4 text-cyan-400 flex-shrink-0" />
-                  <span className="leading-relaxed">{desc}</span>
-                </li>
-              ))}
-            </ul>
-            
-            <div className="space-y-4">
-              <div>
-                <h4 className="text-sm font-semibold text-cyan-300 mb-2 flex items-center gap-2">
-                  <Globe className="h-4 w-4" />
-                  Frontend
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {project.technologies.frontend.map((tech) => (
-                    <span
-                      key={tech}
-                      className="inline-flex items-center rounded-lg border border-cyan-400/30 bg-cyan-500/20 px-3 py-1 text-xs text-cyan-200"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              
-              <div>
-                <h4 className="text-sm font-semibold text-blue-300 mb-2 flex items-center gap-2">
-                  <Server className="h-4 w-4" />
-                  Backend
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {project.technologies.backend.map((tech) => (
-                    <span
-                      key={tech}
-                      className="inline-flex items-center rounded-lg border border-blue-400/30 bg-blue-500/20 px-3 py-1 text-xs text-blue-200"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              
-              <div>
-                <h4 className="text-sm font-semibold text-green-300 mb-2 flex items-center gap-2">
-                  <Database className="h-4 w-4" />
-                  Database
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {project.technologies.database.map((tech) => (
-                    <span
-                      key={tech}
-                      className="inline-flex items-center rounded-lg border border-green-400/30 bg-green-500/20 px-3 py-1 text-xs text-green-200"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              
-              <div>
-                <h4 className="text-sm font-semibold text-purple-300 mb-2 flex items-center gap-2">
-                  <Cloud className="h-4 w-4" />
-                  Others
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {project.technologies.others.map((tech) => (
-                    <span
-                      key={tech}
-                      className="inline-flex items-center rounded-lg border border-purple-400/30 bg-purple-500/20 px-3 py-1 text-xs text-purple-200"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
+                <Github className="h-4 w-4" />
+                View on GitHub
+              </a>
             </div>
 
-            <a
-              href={project.link}
-              target="_blank"
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-slate-800/60 px-6 py-3 text-sm text-gray-200 hover:bg-slate-700/60 hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-500/20 transition-all"
-            >
-              <Github className="h-4 w-4" />
-              View on GitHub
-            </a>
-          </div>
-          
-          <div className={cn(
-            "grid gap-4",
-            project.isMobile ? "grid-cols-3" : "grid-cols-2"
-          )}>
-            {project.images.map((src, i) => (
-              <div
-                key={i}
-                className={cn(
-                  "group overflow-hidden rounded-xl border-2 border-white/10 bg-slate-700/40 transition-all duration-500 hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-500/25",
-                  project.isMobile ? "aspect-[9/16]" : "aspect-video"
-                )}
-              >
-                <div className="relative h-full w-full overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <Image
-                    src={src || "/placeholder.svg"}
-                    alt={`${project.title} screenshot ${i + 1}`}
-                    width={project.isMobile ? 400 : 600}
-                    height={project.isMobile ? 800 : 400}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
-              </div>
-            ))}
+            {/* Enhanced Project Images */}
+            <div className={cn("grid gap-2", project.isMobile ? "grid-cols-3" : "grid-cols-2")}>
+              {project.images.map((src, i) => (
+                <button
+                  key={i}
+                  onClick={() => setSelectedImage(src)}
+                  className={cn(
+                    "group relative overflow-hidden rounded-xl transition-all duration-500 hover:scale-105 cursor-pointer",
+                    project.isMobile ? "aspect-[9/16]" : "aspect-video",
+                  )}
+                  style={{
+                    background: `linear-gradient(135deg, rgba(6,182,212,0.1) 0%, rgba(59,130,246,0.1) 100%)`,
+                    border: `2px solid transparent`,
+                    backgroundClip: "padding-box",
+                  }}
+                >
+                  {/* Fade to background border effect */}
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-cyan-400/20 via-blue-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                  <div className="relative h-full w-full overflow-hidden rounded-lg">
+                    <Image
+                      src={src || "/placeholder.svg"}
+                      alt={`${project.title} screenshot ${i + 1}`}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+
+                    {/* Overlay on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                      <div className="text-white text-sm font-semibold bg-black/50 px-3 py-1 rounded-full">
+                        Click to enlarge
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+
+      {/* Image Lightbox */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 cursor-pointer"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-h-[90vh] max-w-[90vw]">
+            <Image
+              src={selectedImage || "/placeholder.svg"}
+              alt="Enlarged project screenshot"
+              width={1200}
+              height={800}
+              className="max-h-[90vh] w-auto object-contain rounded-xl border-2 border-white/20 shadow-2xl"
+            />
+          </div>
+        </div>
+      )}
+    </>
   )
 }
 
@@ -652,7 +701,9 @@ function Skills({ activeId }) {
                   transition={{ duration: 0.4, delay: index * 0.05 }}
                   className="flex items-center gap-3 rounded-xl border border-white/10 bg-slate-800/40 p-4 backdrop-blur-sm hover:bg-slate-700/40 hover:shadow-lg hover:shadow-cyan-500/10 transition-all"
                 >
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br ${tech.color} shadow-lg`}>
+                  <div
+                    className={`flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br ${tech.color} shadow-lg`}
+                  >
                     <tech.icon className="h-5 w-5 text-white" />
                   </div>
                   <span className="font-medium text-white">{tech.name}</span>
@@ -686,15 +737,23 @@ function Skills({ activeId }) {
                   <ul className="mt-2 space-y-2 text-sm text-gray-400">
                     <li className="flex items-start gap-2">
                       <span className="text-cyan-400">•</span>
-                      <span>For Reading: I can comfortably read and interpret documentation, project specifications, and work totally in English.</span>
+                      <span>
+                        For Reading: I can comfortably read and interpret documentation, project specifications, and
+                        work totally in English.
+                      </span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-cyan-400">•</span>
-                      <span>For Speaking: I am capable of basic communication and am always striving to improve everyday.</span>
+                      <span>
+                        For Speaking: I am capable of basic communication and am always striving to improve everyday.
+                      </span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-cyan-400">•</span>
-                      <span>I would really like the opportunity to work at your organization, where I would be able to practice my ability to speak English.</span>
+                      <span>
+                        I would really like the opportunity to work at your organization, where I would be able to
+                        practice my ability to speak English.
+                      </span>
                     </li>
                   </ul>
                 </div>
@@ -720,12 +779,8 @@ function Education({ activeId }) {
         <div className="relative">
           <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
             <div>
-              <h3 className="text-2xl font-bold text-white mb-2">
-                Bachelor of Software Engineering
-              </h3>
-              <div className="text-lg text-cyan-300 font-semibold mb-1">
-                FPT University
-              </div>
+              <h3 className="text-2xl font-bold text-white mb-2">Bachelor of Software Engineering</h3>
+              <div className="text-lg text-cyan-300 font-semibold mb-1">FPT University</div>
               <div className="text-gray-400">Ho Chi Minh City, Vietnam</div>
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-300 bg-slate-800/60 px-4 py-2 rounded-full border border-white/10">
@@ -733,7 +788,7 @@ function Education({ activeId }) {
               <span>09/2021 - Present</span>
             </div>
           </div>
-          
+
           <ul className="space-y-3 text-gray-300">
             <li className="flex items-start gap-3">
               <Award className="mt-1 h-4 w-4 text-cyan-400 flex-shrink-0" />
@@ -755,23 +810,23 @@ function Certificates({ activeId }) {
     {
       title: "Initiating and Planning Projects",
       provider: "Coursera",
-      link: "#"
+      link: "#",
     },
     {
       title: "Project Management Project",
-      provider: "Coursera", 
-      link: "#"
+      provider: "Coursera",
+      link: "#",
     },
     {
       title: "Managing Project Risks and Changes",
       provider: "Coursera",
-      link: "#"
+      link: "#",
     },
     {
       title: "UX Research at Scale: Surveys, Analytics, Online Testing",
       provider: "Coursera",
-      link: "#"
-    }
+      link: "#",
+    },
   ]
 
   return (
@@ -790,18 +845,15 @@ function Certificates({ activeId }) {
             <div className="relative">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-white mb-2 leading-tight">
-                    {cert.title}
-                  </h3>
-                  <div className="text-cyan-300 font-medium mb-4">
-                    {cert.provider}
-                  </div>
+                  <h3 className="text-lg font-semibold text-white mb-2 leading-tight">{cert.title}</h3>
+                  <div className="text-cyan-300 font-medium mb-4">{cert.provider}</div>
                 </div>
                 <Award className="h-6 w-6 text-cyan-400 flex-shrink-0" />
               </div>
               <a
                 href={cert.link}
                 target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-sm text-gray-300 hover:text-cyan-300 transition-colors"
               >
                 <ExternalLink className="h-4 w-4" />
@@ -830,7 +882,7 @@ function TheEnd({ activeId }) {
                 If you think I may be a good fit, I'd love to connect and learn more about your team and projects.
               </p>
             </div>
-            
+
             <div className="flex flex-wrap items-center justify-center gap-4 pt-6">
               <a
                 href="tel:+84903020347"
@@ -892,42 +944,22 @@ function IconFacebook() {
 }
 
 function AvatarGlow() {
-  const [open, setOpen] = useState(false)
   return (
     <div className="flex flex-col items-center">
-      <button
-        onClick={() => setOpen(true)}
-        className="group relative h-48 w-48 rounded-full"
-        aria-label="View larger avatar"
-      >
+      <div className="group relative h-64 w-64 rounded-full">
         {/* Enhanced rotating glow ring */}
         <div className="pointer-events-none absolute inset-0 -z-10 rounded-full p-[4px]">
           <div className="absolute -inset-[8px] rounded-full bg-[conic-gradient(var(--c1),var(--c2),var(--c3),var(--c1))] [--c1:#06b6d4] [--c2:#3b82f6] [--c3:#8b5cf6] opacity-80 blur-lg animate-[spin_10s_linear_infinite]" />
         </div>
-        <img
-          src="https://firebasestorage.googleapis.com/v0/b/vivu-image.appspot.com/o/Images%2FB612_20250517_114052_439_resized.jpg?alt=media&token=d82ae7ed-0c60-4d85-8e4c-8c42efe2cf4c"
-          alt="Mai Tan Phuc"
-          className="h-full w-full rounded-full border-2 border-white/20 object-cover shadow-2xl transition-transform duration-500 group-hover:scale-[1.02]"
-        />
-      </button>
-
-      {/* Enhanced Lightbox */}
-      {open && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
-          onClick={() => setOpen(false)}
-        >
-          <div className="relative max-h-[90vh] max-w-[90vw]">
-            <img
-              src="https://firebasestorage.googleapis.com/v0/b/vivu-image.appspot.com/o/Images%2FB612_20250517_114052_439_resized.jpg?alt=media&token=d82ae7ed-0c60-4d85-8e4c-8c42efe2cf4c"
-              alt="Mai Tan Phuc large"
-              className="max-h-[90vh] w-auto rounded-3xl border-2 border-white/20 shadow-2xl"
-            />
-          </div>
+        <div className="relative w-64 h-64">
+          <Image
+            src="https://firebasestorage.googleapis.com/v0/b/vivu-image.appspot.com/o/Images%2FB612_20250517_114052_439_resized.jpg?alt=media&token=d82ae7ed-0c60-4d85-8e4c-8c42efe2cf4c"
+            alt="Mai Tan Phuc"
+            fill
+            className="rounded-full border-2 border-white/20 object-cover shadow-2xl"
+          />
         </div>
-      )}
+      </div>
     </div>
   )
 }
