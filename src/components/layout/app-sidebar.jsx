@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils"
 
 export function AppSidebar({ sections = [], activeId, onNavigate }) {
   return (
-    <div className="fixed left-0 top-0 h-screen w-64 z-50">
+    <div className="fixed pt-10 left-0 top-0 h-screen w-64 z-50">
       {/* Glowing border separator */}
       <div className="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-cyan-400/50 to-transparent shadow-lg shadow-cyan-400/50" />
 
