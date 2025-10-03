@@ -1,7 +1,7 @@
-"use client"
-import Link from "next/link"
-import PropTypes from "prop-types"
-import { Separator } from "@/components/ui/separator"
+"use client";
+import Link from "next/link";
+import PropTypes from "prop-types";
+import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -13,10 +13,18 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar"
-import { Button } from "@/components/ui/button"
-import { Github, Linkedin, Facebook, Download, MapPin, Phone, Mail } from "lucide-react"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+import {
+  Github,
+  Linkedin,
+  Facebook,
+  Download,
+  MapPin,
+  Phone,
+  Mail,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function AppSidebar({ sections = [], activeId, onNavigate }) {
   return (
@@ -35,7 +43,9 @@ export function AppSidebar({ sections = [], activeId, onNavigate }) {
             {/* Name and title - left aligned and larger */}
             <div className="text-left">
               <div className="text-xl font-bold text-white">Mai Tan Phuc</div>
-              <div className="text-base text-cyan-300 font-semibold">Full-Stack Developer</div>
+              <div className="text-base text-cyan-300 font-semibold">
+                Full-Stack Developer
+              </div>
               <div className="mt-2 inline-flex items-center gap-1 text-xs text-gray-400">
                 <MapPin className="h-3 w-3" />
                 Go Vap, Ho Chi Minh City
@@ -101,26 +111,34 @@ export function AppSidebar({ sections = [], activeId, onNavigate }) {
                       asChild
                       isActive={activeId === item.id}
                       onClick={(e) => {
-                        e.preventDefault()
-                        onNavigate?.(item.id)
+                        e.preventDefault();
+                        onNavigate?.(item.id);
                       }}
                       className={cn(
                         "group flex items-center py-2.5 text-xs font-bold uppercase tracking-widest transition-all duration-500 rounded-lg",
                         activeId === item.id
                           ? "text-cyan-200 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-400/30 shadow-lg shadow-cyan-500/20"
-                          : "text-gray-500 hover:text-white hover:bg-slate-800/50 border border-transparent",
+                          : "text-gray-500 hover:text-white hover:bg-slate-800/50 border border-transparent"
                       )}
                     >
-                      <a href={`#${item.id}`} className="flex items-center w-full">
+                      <a
+                        href={`#${item.id}`}
+                        className="flex items-center w-full"
+                      >
                         <span
                           className={cn(
                             "mr-3 h-px transition-all duration-500 ease-out",
                             activeId === item.id
                               ? "w-10 bg-gradient-to-r from-cyan-400 to-blue-400 shadow-sm shadow-cyan-400/50"
-                              : "w-6 bg-gray-600 group-hover:w-8 group-hover:bg-cyan-400/70",
+                              : "w-6 bg-gray-600 group-hover:w-8 group-hover:bg-cyan-400/70"
                           )}
                         />
-                        <span className={cn("transition-all duration-300", activeId === item.id && "drop-shadow-sm")}>
+                        <span
+                          className={cn(
+                            "transition-all duration-300",
+                            activeId === item.id && "drop-shadow-sm"
+                          )}
+                        >
                           {item.title}
                         </span>
                       </a>
@@ -140,7 +158,7 @@ export function AppSidebar({ sections = [], activeId, onNavigate }) {
             className="mx-4 mt-3 justify-start gap-2 border-white/20 bg-slate-800/60 text-gray-200 hover:bg-slate-700/60 hover:text-white hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-500/20 transition-all"
           >
             <a
-              href="https://firebasestorage.googleapis.com/v0/b/vivu-image.appspot.com/o/CV%2FMaiTanPhucResume_Fullstack_ReactJS_NodeJS.pdf?alt=media&token=0624acab-87c9-451c-a9d0-d4bf6cffe16f"
+              href="https://firebasestorage.googleapis.com/v0/b/vivu-image.appspot.com/o/CV%2FMaiTanPhucResume_FullstackDev_ReactJS_NodeJS.pdf?alt=media&token=c0db800f-f530-4b51-afd0-0ae5ab442e2d"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -153,7 +171,7 @@ export function AppSidebar({ sections = [], activeId, onNavigate }) {
         <SidebarRail />
       </Sidebar>
     </div>
-  )
+  );
 }
 
 AppSidebar.propTypes = {
@@ -161,8 +179,8 @@ AppSidebar.propTypes = {
     PropTypes.shape({
       id: PropTypes.string.isRequired,
       title: PropTypes.string.isRequired,
-    }),
+    })
   ),
   activeId: PropTypes.string,
   onNavigate: PropTypes.func,
-}
+};

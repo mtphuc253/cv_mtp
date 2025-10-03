@@ -63,16 +63,23 @@ export default function Page() {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
-            setActiveId(entry.target.id)
+        let maxRatio = 0
+        let activeEntry = null
+        for (const entry of entries) {
+          if (entry.intersectionRatio > maxRatio) {
+            maxRatio = entry.intersectionRatio
+            activeEntry = entry
           }
-        })
+        }
+
+        if (activeEntry) {
+          setActiveId(activeEntry.target.id)
+        }
       },
       {
         root: null,
         rootMargin: "-20% 0px -20% 0px",
-        threshold: [0.5, 0.75, 1],
+        threshold: Array.from({ length: 51 }, (_, i) => i * 0.02), // check every 2%
       },
     )
 
@@ -154,7 +161,7 @@ function Section({ id, title, icon: Icon, children, activeId }) {
       id={id}
       initial={{ opacity: 0, y: 32 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
+      viewport={{ once: true, amount: 0.1 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
       className="mb-20 scroll-mt-24 relative"
       aria-labelledby={`${id}-title`}
@@ -284,7 +291,7 @@ function About({ activeId }) {
                   <span className="font-semibold text-white">Back-end</span>
                 </div>
                 <p className="text-sm text-gray-300 leading-relaxed">
-                  I have experience working with Node.JS, TypeScript, ExpressJS, MongoDB, MicrosoftSQL, Firebase and
+                  I have experience working with Node.JS, TypeScript, ExpressJS, MongoDB, PostgreSQL, MicrosoftSQL, Firebase and
                   other technologies.
                 </p>
               </div>
@@ -299,6 +306,20 @@ function About({ activeId }) {
 function Experience({ activeId }) {
   const experiences = [
     {
+      period: "FEB 2025 — SEP 2025",
+      title: "Fullstack Developer",
+      company: "HUNGPHUC CONSTRUCTION",
+      location: "Ho Chi Minh City, Vietnam",
+      description: [
+        "Developed the company's SEO website using Next.js and Node.js, increasing organic traffic by 15% in three months.",
+        "Built an internal management system for approximately 20 employees to manage employees and customers, reducing manual processing time by 30%.",
+        "Designed and implemented a customer management module (mini CRM), managing more than 100 customer profiles supporting quick lookup, communication, and customer lifecycle management.",
+        "Deployed and maintained servers, domains, and SSL certificates, ensuring uptime greater than 99.5%.",
+        "Managed and maintained office equipment including computers, networks, and licensed software, handling over 95% of IT support requests during the day.",
+      ],
+      technologies: ["NextJS", "Redux", "NodeJS", "PostgrSQL", " Cloudinary"],
+    },
+    {
       period: "DEC 2023 — APR 2024",
       title: "Intern Software Engineer",
       company: "FPT Software",
@@ -310,7 +331,7 @@ function Experience({ activeId }) {
         "Increase system efficiency by 10% by optimizing code, rerendering interfaces properly, and avoiding redundant API calls.",
         "Contributed to designing and refining user interface components based on feedback and project needs.",
       ],
-      technologies: ["ReactJS", "Redux", "Firebase", "React Hooks"],
+      technologies: ["ReactJS", "Redux", "Firebase", "React Hooks Form"],
     },
     {
       period: "APR 2024 — AUG 2024",
