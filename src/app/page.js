@@ -306,7 +306,7 @@ function About({ activeId }) {
 function Experience({ activeId }) {
   const experiences = [
     {
-      period: "FEB 2025 — SEP 2025",
+      period: "SEP 2024 — SEP 2025",
       title: "Fullstack Developer",
       company: "HUNGPHUC CONSTRUCTION",
       location: "Ho Chi Minh City, Vietnam",
