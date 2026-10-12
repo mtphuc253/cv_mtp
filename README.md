@@ -29,6 +29,11 @@ Open http://localhost:3000.
 - `src/app/api/chat/route.js` — streams Gemini's answer. Validates input, rate-limits per IP.
 - `src/lib/chat-prompt.js` — system prompt that keeps the assistant on-topic.
 
+## Roadmap
+
+- Visitor tracking (who visits, which sections they open, what they ask) with Neon: not started, design in
+  [docs/tracking-plan.md](docs/tracking-plan.md).
+
 ## Deploy (Vercel)
 
 The chat needs a server (`/api/chat`), so this app can't be a static export / GitHub Pages site.
