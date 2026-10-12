@@ -9,8 +9,8 @@ const tag = (Tag, className) =>
 
 const components = {
   p: tag("p", "leading-7 [&:not(:first-child)]:mt-3"),
-  ul: tag("ul", "mt-3 list-disc space-y-1.5 pl-5 marker:text-cyan-400"),
-  ol: tag("ol", "mt-3 list-decimal space-y-1.5 pl-5 marker:text-cyan-400"),
+  ul: tag("ul", "mt-3 list-disc space-y-1.5 pl-5 marker:text-muted-foreground"),
+  ol: tag("ol", "mt-3 list-decimal space-y-1.5 pl-5 marker:text-muted-foreground"),
   li: tag("li", "leading-7"),
   strong: tag("strong", "font-semibold text-foreground"),
   h1: tag("h3", "mt-4 text-lg font-semibold"),
@@ -23,7 +23,7 @@ const components = {
         {...props}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-cyan-300 underline underline-offset-4 hover:text-cyan-200"
+        className="text-[#a8c7fa] underline underline-offset-4 hover:text-[#d3e3fd]"
       />
     )
   },
@@ -31,7 +31,7 @@ const components = {
 
 export function Markdown({ children, className }) {
   return (
-    <div className={cn("text-base text-white", className)}>
+    <div className={cn("text-[17px] text-white", className)}>
       <ReactMarkdown components={components}>{children}</ReactMarkdown>
     </div>
   )

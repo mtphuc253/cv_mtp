@@ -18,7 +18,7 @@ export function UserMessage({ content }) {
       style={{ originX: 1 }}
       className="flex justify-end"
     >
-      <div className="max-w-[85%] whitespace-pre-wrap break-words rounded-3xl rounded-br-lg border border-cyan-400/20 bg-gradient-to-br from-cyan-500/20 to-blue-600/20 px-5 py-3 text-base leading-7 shadow-lg shadow-cyan-500/5">
+      <div className="max-w-[85%] whitespace-pre-wrap break-words rounded-[28px] bg-card px-6 py-3.5 text-[17px] leading-7">
         {content}
       </div>
     </motion.div>
@@ -33,7 +33,7 @@ export function AssistantMessage({ children, delay = 0 }) {
       transition={{ duration: 0.4, delay, ease: "easeOut" }}
       className="flex gap-3 sm:gap-4"
     >
-      <Logo className="mt-0.5 size-8 shadow-md shadow-black/40" />
+      <Logo className="mt-0.5 size-8" />
       <div className="min-w-0 flex-1">{children}</div>
     </motion.div>
   )
@@ -45,7 +45,7 @@ export function ThinkingDots() {
       {[0, 1, 2].map((i) => (
         <span
           key={i}
-          className="size-2 animate-bounce rounded-full bg-gradient-to-br from-cyan-400 to-violet-400"
+          className="size-2 animate-bounce rounded-full bg-muted-foreground"
           style={{ animationDelay: `${i * 150}ms` }}
         />
       ))}
@@ -90,7 +90,7 @@ export function TextAnswer({ message }) {
     <div>
       {text ? <Markdown>{text}</Markdown> : status === "streaming" ? <ThinkingDots /> : null}
       {text && (typing || status === "streaming") && (
-        <span className="mt-2 inline-block size-2.5 animate-pulse rounded-full bg-gradient-to-br from-cyan-400 to-violet-500" />
+        <span className="mt-2 inline-block size-2.5 animate-pulse rounded-full bg-muted-foreground" />
       )}
       {error && !typing && <p className="mt-3 text-sm text-destructive">{error}</p>}
     </div>

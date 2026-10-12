@@ -55,7 +55,7 @@ function Reveal({ children, delay = 0, className }) {
 function Intro({ children }) {
   const { text } = useSmoothText(children, true)
   return (
-    <p className="mb-4 text-base leading-7">
+    <p className="mb-5 text-[17px] leading-7">
       {text}
       <span className="invisible">{children.slice(text.length)}</span>
     </p>
@@ -66,7 +66,7 @@ function Card({ children, className }) {
   return (
     <div
       className={cn(
-        "rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-sm transition-colors hover:border-cyan-400/25 sm:p-6",
+        "rounded-3xl bg-card p-5 sm:p-7",
         className,
       )}
     >
@@ -75,17 +75,9 @@ function Card({ children, className }) {
   )
 }
 
-const TONES = {
-  cyan: "border-cyan-400/20 bg-cyan-500/10 text-cyan-200",
-  blue: "border-blue-400/20 bg-blue-500/10 text-blue-200",
-  emerald: "border-emerald-400/20 bg-emerald-500/10 text-emerald-200",
-  violet: "border-violet-400/20 bg-violet-500/10 text-violet-200",
-  neutral: "border-border bg-secondary/60 text-white",
-}
-
-function Chip({ children, tone = "cyan" }) {
+function Chip({ children }) {
   return (
-    <span className={cn("inline-flex items-center rounded-full border px-2.5 py-1 text-[13px] font-medium", TONES[tone])}>
+    <span className="inline-flex items-center rounded-full bg-secondary px-3 py-1 text-[13px] font-medium text-white">
       {children}
     </span>
   )
@@ -95,8 +87,8 @@ function Bullets({ items, icon: Icon = ChevronRight }) {
   return (
     <ul className="space-y-2.5">
       {items.map((item) => (
-        <li key={item} className="flex items-start gap-2.5 text-[15px] leading-7 text-white">
-          <Icon className="mt-1.5 size-4 shrink-0 text-cyan-400" />
+        <li key={item} className="flex items-start gap-3 text-base leading-7 text-white">
+          <Icon className="mt-1.5 size-4 shrink-0 text-[#a8c7fa]" />
           <span>{item}</span>
         </li>
       ))}
@@ -110,10 +102,8 @@ function PillLink({ href, icon: Icon, children, external, primary }) {
       href={href}
       {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       className={cn(
-        "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors",
-        primary
-          ? "border-transparent bg-foreground text-background hover:bg-foreground/90"
-          : "border-border bg-secondary/50 text-white hover:bg-secondary",
+        "inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-colors",
+        primary ? "bg-[#004a77] text-[#c2e7ff] hover:bg-[#005a92]" : "bg-secondary text-white hover:bg-accent",
       )}
     >
       <Icon className="size-4" />
@@ -137,7 +127,7 @@ function SocialLinks() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={label}
-          className="inline-flex size-10 items-center justify-center rounded-xl border border-border bg-secondary/50 text-white transition-colors hover:bg-secondary hover:text-foreground"
+          className="inline-flex size-10 items-center justify-center rounded-full bg-secondary text-white transition-colors hover:bg-accent"
         >
           <Icon className="size-4" />
         </a>
@@ -185,10 +175,7 @@ function ImageLightbox({ src, alt, onClose }) {
 
 function Avatar() {
   return (
-    <div className="relative size-28 shrink-0">
-      <div className="absolute -inset-1.5 animate-[spin_10s_linear_infinite] rounded-full bg-[conic-gradient(#06b6d4,#3b82f6,#8b5cf6,#06b6d4)] opacity-80 blur-md" />
-      <ProfileAvatar className="size-full border-2 border-white/20" sizes="112px" />
-    </div>
+    <ProfileAvatar className="size-28" sizes="112px" />
   )
 }
 
@@ -205,7 +192,7 @@ function AboutResponse() {
             <Avatar />
             <div className="min-w-0">
               <h3 className="text-2xl font-bold tracking-tight">{profile.name}</h3>
-              <div className="font-medium text-cyan-300">{profile.role}</div>
+              <div className="font-medium text-[#a8c7fa]">{profile.role}</div>
               <div className="mt-1 flex items-center gap-1.5 text-sm text-white">
                 <MapPin className="size-4" />
                 {profile.location}
@@ -235,7 +222,7 @@ function AboutResponse() {
           <Reveal key={title} delay={0.16 + i * 0.08}>
             <Card className="h-full p-5">
               <div className="mb-2 flex items-center gap-2 font-semibold">
-                <Icon className="size-4 text-cyan-400" />
+                <Icon className="size-4 text-[#a8c7fa]" />
                 {title}
               </div>
               <p className="text-sm leading-6 text-white">{text}</p>
@@ -262,11 +249,11 @@ function ExperienceResponse() {
               <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h3 className="text-lg font-bold">{exp.title}</h3>
-                  <div className="font-medium text-cyan-300">{exp.company}</div>
+                  <div className="font-medium text-[#a8c7fa]">{exp.company}</div>
                   <div className="text-sm text-white">{exp.location}</div>
                 </div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/50 px-3 py-1.5 text-xs text-white">
-                  <CalendarDays className="size-3.5 text-cyan-400" />
+                <div className="inline-flex items-center gap-2 rounded-full bg-secondary px-3.5 py-1.5 text-[13px] text-white">
+                  <CalendarDays className="size-3.5 text-[#a8c7fa]" />
                   {exp.period}
                 </div>
               </div>
@@ -287,10 +274,10 @@ function ExperienceResponse() {
 /* ---------- Projects ---------- */
 
 const TECH_ROWS = [
-  { key: "frontend", label: "Frontend", icon: Globe, tone: "cyan" },
-  { key: "backend", label: "Backend", icon: Server, tone: "blue" },
-  { key: "database", label: "Database", icon: Database, tone: "emerald" },
-  { key: "others", label: "Others", icon: Cloud, tone: "violet" },
+  { key: "frontend", label: "Frontend", icon: Globe },
+  { key: "backend", label: "Backend", icon: Server },
+  { key: "database", label: "Database", icon: Database },
+  { key: "others", label: "Others", icon: Cloud },
 ]
 
 function ProjectCard({ project }) {
@@ -302,29 +289,29 @@ function ProjectCard({ project }) {
 
   return (
     <>
-      <Card className={cn(project.featured && "border-cyan-400/25 bg-cyan-500/[0.04]")}>
+      <Card>
         {project.featured && (
-          <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-cyan-300">Featured project</div>
+          <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#a8c7fa]">Featured project</div>
         )}
 
         <a
           href={project.link}
           target="_blank"
           rel="noopener noreferrer"
-          className="group inline-flex items-center gap-2 text-lg font-bold transition-colors hover:text-cyan-300"
+          className="group inline-flex items-center gap-2 text-lg font-bold transition-colors hover:text-[#d3e3fd]"
         >
           {project.title}
           <ExternalLink className="size-4 opacity-0 transition-opacity group-hover:opacity-100" />
         </a>
         <div className="mt-1 text-sm text-white">{project.subtitle}</div>
-        <div className="mt-2 text-sm font-medium text-cyan-300">Role: {project.role}</div>
+        <div className="mt-2 text-sm font-medium text-[#a8c7fa]">Role: {project.role}</div>
 
         <div className="mt-4">
           <Bullets items={project.description} />
         </div>
 
         <dl className="mt-5 space-y-3">
-          {TECH_ROWS.map(({ key, label, icon: Icon, tone }) => (
+          {TECH_ROWS.map(({ key, label, icon: Icon }) => (
             <div key={key} className="flex flex-wrap items-center gap-2">
               <dt className="flex w-24 shrink-0 items-center gap-1.5 text-xs font-medium text-white">
                 <Icon className="size-3.5" />
@@ -332,7 +319,7 @@ function ProjectCard({ project }) {
               </dt>
               <dd className="flex flex-wrap gap-1.5">
                 {project.technologies[key].map((tech) => (
-                  <Chip key={tech} tone={tone}>
+                  <Chip key={tech}>
                     {tech}
                   </Chip>
                 ))}
@@ -350,7 +337,7 @@ function ProjectCard({ project }) {
                 onClick={() => setSelected(src)}
                 aria-label={`Enlarge ${project.title} screenshot ${i + 1}`}
                 className={cn(
-                  "group relative cursor-zoom-in overflow-hidden rounded-xl border border-border bg-secondary/40",
+                  "group relative cursor-zoom-in overflow-hidden rounded-2xl bg-secondary",
                   project.isMobile ? "aspect-[9/16]" : "aspect-video",
                 )}
               >
@@ -439,7 +426,7 @@ function SkillsResponse() {
       </Reveal>
 
       <Reveal delay={0.24} className="mt-3">
-        <div className="rounded-2xl border border-cyan-400/25 bg-cyan-500/[0.06] px-5 py-4 text-center font-medium italic text-cyan-100">
+        <div className="rounded-3xl bg-card px-6 py-5 text-center text-lg italic text-white">
           {`My maxim: "${profile.maxim}"`}
         </div>
       </Reveal>
@@ -460,11 +447,11 @@ function EducationResponse() {
           <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
             <div>
               <h3 className="text-lg font-bold">{education.degree}</h3>
-              <div className="font-medium text-cyan-300">{education.school}</div>
+              <div className="font-medium text-[#a8c7fa]">{education.school}</div>
               <div className="text-sm text-white">{education.location}</div>
             </div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/50 px-3 py-1.5 text-xs text-white">
-              <CalendarDays className="size-3.5 text-cyan-400" />
+            <div className="inline-flex items-center gap-2 rounded-full bg-secondary px-3.5 py-1.5 text-[13px] text-white">
+              <CalendarDays className="size-3.5 text-[#a8c7fa]" />
               {education.period}
             </div>
           </div>
@@ -490,16 +477,16 @@ function CertificatesResponse() {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h3 className="font-semibold leading-snug">{cert.title}</h3>
-                  <div className="mt-1 text-sm font-medium text-cyan-300">{cert.provider}</div>
+                  <div className="mt-1 text-sm font-medium text-[#a8c7fa]">{cert.provider}</div>
                 </div>
-                <Award className="size-5 shrink-0 text-cyan-400" />
+                <Award className="size-5 shrink-0 text-[#a8c7fa]" />
               </div>
               {cert.link && (
                 <a
                   href={cert.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-4 inline-flex items-center gap-2 text-sm text-white transition-colors hover:text-cyan-300"
+                  className="mt-4 inline-flex items-center gap-2 text-sm text-white transition-colors hover:text-[#d3e3fd]"
                 >
                   <ExternalLink className="size-4" />
                   View certificate

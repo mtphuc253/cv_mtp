@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion"
 import { ChatComposer, ComposerHint } from "@/components/chat/chat-composer"
-import { Logo } from "@/components/chat/logo"
 import { suggestions } from "@/data/topics"
 
 export function ChatHome({ onSend, onStop, streaming, onOpenTopic }) {
@@ -14,25 +13,20 @@ export function ChatHome({ onSend, onStop, streaming, onOpenTopic }) {
         transition={{ duration: 0.5, ease: "easeOut" }}
         className="w-full max-w-3xl"
       >
-        <div className="mb-8 flex flex-col items-center gap-4 text-center">
-          <Logo className="size-14 shadow-xl shadow-black/40" />
-          <h1 className="bg-gradient-to-r from-white via-cyan-200 to-violet-300 bg-clip-text text-4xl font-semibold tracking-tight text-transparent">
-            Where should we start?
-          </h1>
-          <p className="text-base text-muted-foreground">
-            Ask anything about Mai Tan Phuc — his experience, projects and skills.
-          </p>
+        <div className="mb-9 text-center">
+          <h1 className="text-[2.5rem] font-normal leading-tight tracking-tight">Hello, I&apos;m Phuc AI</h1>
+          <p className="mt-2 text-xl text-muted-foreground">Ask me anything about Mai Tan Phuc.</p>
         </div>
 
         <ChatComposer onSend={onSend} onStop={onStop} streaming={streaming} />
 
-        <div className="mt-4 flex flex-wrap justify-center gap-2">
+        <div className="mt-5 flex flex-wrap justify-center gap-2.5">
           {suggestions.map((s) => (
             <button
               key={s.label}
               type="button"
               onClick={() => (s.topic ? onOpenTopic(s.topic) : onSend(s.prompt))}
-              className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-foreground/75 backdrop-blur transition-all hover:-translate-y-0.5 hover:border-cyan-400/40 hover:bg-cyan-500/10 hover:text-foreground"
+              className="rounded-full bg-card px-5 py-2.5 text-[15px] text-foreground transition-colors hover:bg-secondary"
             >
               {s.label}
             </button>

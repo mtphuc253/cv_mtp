@@ -6,12 +6,7 @@ import { cn } from "@/lib/utils"
 // readable on the dark UI; size it with `size-*` classes.
 export function Logo({ className }) {
   return (
-    <span
-      className={cn(
-        "inline-flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-[26%] bg-white ring-1 ring-white/20",
-        className,
-      )}
-    >
+    <span className={cn("inline-flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-[26%] bg-white", className)}>
       <Image src="/logo.png" alt="Phuc AI" width={128} height={128} className="size-full object-contain p-[6%]" />
     </span>
   )

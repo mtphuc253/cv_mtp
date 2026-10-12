@@ -6,7 +6,7 @@ import { ProfileAvatar } from "@/components/chat/profile-avatar"
 import { profile } from "@/data/profile"
 
 const ROW = "flex items-center gap-3 rounded-lg px-3 py-2.5 text-[15px] outline-none"
-const LINK_ROW = `${ROW} cursor-pointer data-[highlighted]:bg-accent`
+const LINK_ROW = `${ROW} cursor-pointer data-[highlighted]:bg-white/[0.08]`
 
 const links = [
   { label: profile.phone, href: profile.phoneHref, icon: Phone },
@@ -26,14 +26,14 @@ export function ProfileMenu() {
       <Menu.Trigger asChild>
         <button
           type="button"
-          className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.05] px-3 py-2.5 text-left outline-none transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-sidebar-ring data-[state=open]:bg-white/10"
+          className="flex w-full items-center gap-3 rounded-full px-3 py-2 text-left outline-none transition-colors hover:bg-white/[0.08] focus-visible:ring-2 focus-visible:ring-sidebar-ring data-[state=open]:bg-white/[0.08]"
         >
-          <ProfileAvatar className="size-11 border border-white/20" sizes="44px" />
+          <ProfileAvatar className="size-10" sizes="40px" />
           <div className="min-w-0 flex-1 leading-tight">
             <div className="truncate text-[15.5px] font-medium">{profile.name}</div>
-            <div className="truncate text-[13px] font-medium text-white/45">{profile.role}</div>
+            <div className="truncate text-[13px] text-muted-foreground">{profile.role}</div>
           </div>
-          <ChevronsUpDown className="size-4 shrink-0 text-white/50" />
+          <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" />
         </button>
       </Menu.Trigger>
 
@@ -42,7 +42,7 @@ export function ProfileMenu() {
           side="top"
           align="start"
           sideOffset={8}
-          className="z-[60] w-(--radix-dropdown-menu-trigger-width) min-w-64 rounded-2xl border border-border bg-popover p-1.5 text-popover-foreground shadow-2xl data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+          className="z-[60] w-(--radix-dropdown-menu-trigger-width) min-w-64 rounded-2xl bg-popover p-1.5 text-popover-foreground shadow-2xl shadow-black/50 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
         >
           <div className={`${ROW} text-muted-foreground`}>
             <MapPin className="size-4 shrink-0" />

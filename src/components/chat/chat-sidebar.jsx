@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion"
 import { Download, ExternalLink, Github, Linkedin, SquarePen } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import {
   Sidebar,
   SidebarContent,
@@ -20,14 +19,14 @@ import {
 import { Logo } from "@/components/chat/logo"
 import { ProfileMenu } from "@/components/chat/profile-menu"
 import { profile } from "@/data/profile"
-import { NEUTRAL_TONE, topics } from "@/data/topics"
+import { topics } from "@/data/topics"
 import { cn } from "@/lib/utils"
 
-const SECTION_LABEL = "px-3 text-[13px] font-medium uppercase tracking-wider text-white/40"
+const SECTION_LABEL = "px-3.5 text-sm font-medium text-muted-foreground"
 
-// One sidebar row. The highlighted "pill" is shared (layoutId) so it glides from
-// the previously selected row to the new one instead of jumping.
-function NavItem({ active, tone = NEUTRAL_TONE, icon: Icon, onClick, href, children }) {
+// One sidebar row. The selected "pill" is shared (layoutId) so it glides from the
+// previously selected row to the new one instead of jumping.
+function NavItem({ active, icon: Icon, onClick, href, external, children }) {
   const content = (
     <>
       {active && (
@@ -35,24 +34,20 @@ function NavItem({ active, tone = NEUTRAL_TONE, icon: Icon, onClick, href, child
           layoutId="nav-pill"
           aria-hidden
           transition={{ type: "spring", stiffness: 420, damping: 34 }}
-          className={cn("absolute inset-0 rounded-xl bg-gradient-to-r ring-1 ring-inset", tone.pill)}
+          className="absolute inset-0 rounded-full bg-[#a8c7fa]/[0.16]"
         />
       )}
-      <span className="relative z-10 flex min-w-0 flex-1 items-center gap-3">
-        {Icon && (
-          <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-lg", tone.chip)}>
-            <Icon className="size-[18px]" />
-          </span>
-        )}
+      <span className="relative z-10 flex min-w-0 flex-1 items-center gap-3.5">
+        {Icon && <Icon className="size-5 shrink-0" />}
         <span className="truncate">{children}</span>
       </span>
-      {href && <ExternalLink className="relative z-10 size-3.5 shrink-0 text-white/30" />}
+      {external && <ExternalLink className="relative z-10 size-3.5 shrink-0 opacity-40" />}
     </>
   )
 
   const className = cn(
-    "relative h-11 gap-3 overflow-visible rounded-xl px-2.5 text-[15.5px] font-medium text-white/70 transition-colors",
-    "hover:bg-white/[0.05] hover:text-white data-[active=true]:bg-transparent data-[active=true]:font-medium data-[active=true]:text-white",
+    "relative h-11 gap-3 overflow-visible rounded-full px-3.5 text-[15.5px] font-medium text-[#e3e3e3] transition-colors",
+    "hover:bg-white/[0.08] data-[active=true]:bg-transparent data-[active=true]:font-medium data-[active=true]:text-[#d3e3fd]",
   )
 
   return (
@@ -83,29 +78,20 @@ export function ChatSidebar({ activeId, recentThreads, onNewChat, onOpenThread }
 
   return (
     <Sidebar collapsible="offcanvas">
-      {/* Decorative glow behind the content (the sidebar itself is a solid indigo). */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_55%_at_0%_0%,rgba(6,182,212,0.09),transparent_60%),radial-gradient(100%_45%_at_100%_100%,rgba(139,92,246,0.09),transparent_60%)]"
-      />
-
-      <SidebarHeader className="relative z-10 px-4 pb-2 pt-4">
+      <SidebarHeader className="px-4 pb-1 pt-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Logo className="size-10 shadow-md shadow-black/30" />
-            <div className="leading-tight">
-              <div className="text-xl font-medium tracking-tight">Phuc AI</div>
-              <div className="text-[13px] font-medium text-white/45">Interactive portfolio</div>
-            </div>
+          <div className="flex items-center gap-3 px-1">
+            <Logo className="size-8" />
+            <span className="text-[19px] font-medium tracking-tight">Phuc AI</span>
           </div>
-          <SidebarTrigger className="size-9 text-white/60 hover:bg-white/10 hover:text-white" />
+          <SidebarTrigger className="size-10 text-muted-foreground hover:bg-white/10 hover:text-foreground" />
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="relative z-10 px-3 pt-2">
+      <SidebarContent className="px-3 pt-3">
         <SidebarGroup className="py-0">
           <SidebarGroupContent>
-            <SidebarMenu className="gap-1">
+            <SidebarMenu className="gap-0.5">
               <NavItem active={activeId === null} icon={SquarePen} onClick={choose(onNewChat)}>
                 New chat
               </NavItem>
@@ -116,12 +102,11 @@ export function ChatSidebar({ activeId, recentThreads, onNewChat, onOpenThread }
         <SidebarGroup className="pt-5">
           <SidebarGroupLabel className={SECTION_LABEL}>About Phuc</SidebarGroupLabel>
           <SidebarGroupContent className="mt-1">
-            <SidebarMenu className="gap-1">
+            <SidebarMenu className="gap-0.5">
               {topics.map((topic) => (
                 <NavItem
                   key={topic.id}
                   active={activeId === topic.id}
-                  tone={topic.tone}
                   icon={topic.icon}
                   onClick={choose(() => onOpenThread(topic.id))}
                 >
@@ -136,7 +121,7 @@ export function ChatSidebar({ activeId, recentThreads, onNewChat, onOpenThread }
           <SidebarGroup className="pt-3">
             <SidebarGroupLabel className={SECTION_LABEL}>Recent</SidebarGroupLabel>
             <SidebarGroupContent className="mt-1">
-              <SidebarMenu className="gap-1">
+              <SidebarMenu className="gap-0.5">
                 {recentThreads.map((thread) => (
                   <NavItem
                     key={thread.id}
@@ -154,11 +139,14 @@ export function ChatSidebar({ activeId, recentThreads, onNewChat, onOpenThread }
         <SidebarGroup className="pt-3">
           <SidebarGroupLabel className={SECTION_LABEL}>Links</SidebarGroupLabel>
           <SidebarGroupContent className="mt-1">
-            <SidebarMenu className="gap-1">
-              <NavItem icon={Github} href={profile.socials.github}>
+            <SidebarMenu className="gap-0.5">
+              <NavItem icon={Download} href={profile.cvUrl}>
+                Download CV
+              </NavItem>
+              <NavItem icon={Github} href={profile.socials.github} external>
                 GitHub
               </NavItem>
-              <NavItem icon={Linkedin} href={profile.socials.linkedin}>
+              <NavItem icon={Linkedin} href={profile.socials.linkedin} external>
                 LinkedIn
               </NavItem>
             </SidebarMenu>
@@ -166,18 +154,8 @@ export function ChatSidebar({ activeId, recentThreads, onNewChat, onOpenThread }
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="relative z-10 gap-3 border-t border-white/10 p-4">
+      <SidebarFooter className="p-3">
         <ProfileMenu />
-        <Button
-          asChild
-          variant="outline"
-          className="h-11 rounded-full border-white/15 bg-white/[0.06] text-[15px] font-medium text-white/90 hover:bg-white/10 hover:text-white"
-        >
-          <a href={profile.cvUrl} target="_blank" rel="noopener noreferrer">
-            <Download />
-            Download CV
-          </a>
-        </Button>
       </SidebarFooter>
     </Sidebar>
   )
