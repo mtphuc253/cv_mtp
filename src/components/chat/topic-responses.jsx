@@ -187,7 +187,7 @@ function Avatar() {
   return (
     <div className="relative size-28 shrink-0">
       <div className="absolute -inset-1.5 animate-[spin_10s_linear_infinite] rounded-full bg-[conic-gradient(#06b6d4,#3b82f6,#8b5cf6,#06b6d4)] opacity-80 blur-md" />
-      <ProfileAvatar className="size-full border-2 border-white/20" sizes="112px" textClass="text-3xl" />
+      <ProfileAvatar className="size-full border-2 border-white/20" sizes="112px" />
     </div>
   )
 }

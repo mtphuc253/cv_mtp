@@ -34,8 +34,14 @@ Open http://localhost:3000.
 The chat needs a server (`/api/chat`), so this app can't be a static export / GitHub Pages site.
 Import the repo in Vercel and add `GEMINI_API_KEY` under Settings → Environment Variables.
 
-## Assets to re-host
+## Assets
 
-`profile.avatar`, `profile.cvUrl` and the project screenshots in `src/data/profile.js` pointed at
-Firebase Storage buckets that now return HTTP 402. The UI hides dead images, but the "Download CV"
-link is broken until you host the PDF again (e.g. `public/cv.pdf` and `cvUrl: "/cv.pdf"`).
+- `public/avatar.webp` — portrait used in the profile card and the sidebar.
+- `public/projects/*` — project screenshots shown in the "Highlight projects" answer.
+- `public/logo.png` — the MTP logo (cropped from `src/app/favicon.ico`).
+
+The avatar and screenshots used to live on Firebase Storage, which now returns HTTP 402; they were
+recovered from Next's image cache and are now served from `public/`.
+
+**Still broken:** `profile.cvUrl` in `src/data/profile.js` points at a PDF on that same Firebase bucket,
+so "Download CV" fails. Host the PDF again (e.g. `public/cv.pdf`) and set `cvUrl: "/cv.pdf"`.

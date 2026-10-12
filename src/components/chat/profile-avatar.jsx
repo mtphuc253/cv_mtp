@@ -1,11 +1,12 @@
 "use client"
 
-import { InitialsAvatar, SafeImage } from "@/components/chat/safe-image"
+import { Logo } from "@/components/chat/logo"
+import { SafeImage } from "@/components/chat/safe-image"
 import { profile } from "@/data/profile"
 import { cn } from "@/lib/utils"
 
-// Phuc's photo as a circle; falls back to initials if the photo link is dead.
-export function ProfileAvatar({ className, sizes, textClass = "text-sm" }) {
+// Phuc's portrait as a circle; falls back to the MTP logo if the photo can't load.
+export function ProfileAvatar({ className, sizes }) {
   return (
     <div className={cn("relative shrink-0 overflow-hidden rounded-full", className)}>
       <SafeImage
@@ -13,8 +14,9 @@ export function ProfileAvatar({ className, sizes, textClass = "text-sm" }) {
         alt={profile.name}
         fill
         sizes={sizes}
-        className="object-cover"
-        fallback={<InitialsAvatar initials={profile.initials} className={cn("size-full", textClass)} />}
+        // The face sits a little above the middle of the portrait.
+        className="object-cover object-[center_40%]"
+        fallback={<Logo className="size-full rounded-none ring-0" />}
       />
     </div>
   )
