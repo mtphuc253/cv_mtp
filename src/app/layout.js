@@ -12,8 +12,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "I'm Phuc",
-  description: "Welcome to my Portfolio",
+  title: "Phuc AI — Mai Tan Phuc's Portfolio",
+  description:
+    "Chat with Phuc AI to explore the experience, projects and skills of Mai Tan Phuc, a Full-Stack Developer (ReactJS / NodeJS).",
 };
 
 export default function RootLayout({ children }) {

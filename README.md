@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Phuc AI — interactive portfolio
 
-## Getting Started
+Mai Tan Phuc's portfolio, presented as a ChatGPT-style chat. The sidebar holds pre-made
+conversations (about, experience, projects, skills, education, certificates, contact) and visitors
+can also type questions, which a Gemini model answers from the CV — and only from the CV.
 
-First, run the development server:
+Built with Next.js 15 (App Router), React 19, Tailwind CSS v4, shadcn/ui, framer-motion.
+
+## Run locally
 
 ```bash
+npm install
+cp .env.example .env   # then put your Gemini key in .env
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+| Variable         | Required | Notes                                                                  |
+| ---------------- | -------- | ---------------------------------------------------------------------- |
+| `GEMINI_API_KEY` | yes      | Create one at https://aistudio.google.com/apikey. Server-side only.     |
+| `GEMINI_MODEL`   | no       | Defaults to `gemini-3.5-flash-lite` (free tier). Override if retired.   |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Where things live
 
-## Learn More
+- `src/data/profile.js` — all CV content. Edit here; the cards and the AI both read it.
+- `src/data/topics.js` — sidebar conversations and the visitor's question for each.
+- `src/components/chat/` — chat UI (sidebar, messages, composer, rich answer cards).
+- `src/app/api/chat/route.js` — streams Gemini's answer. Validates input, rate-limits per IP.
+- `src/lib/chat-prompt.js` — system prompt that keeps the assistant on-topic.
 
-To learn more about Next.js, take a look at the following resources:
+## Deploy (Vercel)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The chat needs a server (`/api/chat`), so this app can't be a static export / GitHub Pages site.
+Import the repo in Vercel and add `GEMINI_API_KEY` under Settings → Environment Variables.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Assets to re-host
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`profile.avatar`, `profile.cvUrl` and the project screenshots in `src/data/profile.js` pointed at
+Firebase Storage buckets that now return HTTP 402. The UI hides dead images, but the "Download CV"
+link is broken until you host the PDF again (e.g. `public/cv.pdf` and `cvUrl: "/cv.pdf"`).
