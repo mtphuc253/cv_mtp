@@ -33,7 +33,8 @@ function profileText() {
 
   lines.push("\nWORK EXPERIENCE")
   for (const e of experiences) {
-    lines.push(`- ${e.title} at ${e.company}, ${e.location} (${e.period}). Technologies: ${e.technologies.join(", ")}`)
+    const site = e.link ? ` Website: ${e.link}.` : ""
+    lines.push(`- ${e.title} at ${e.company}, ${e.location} (${e.period}).${site} Technologies: ${e.technologies.join(", ")}`)
     for (const group of experienceGroups(e)) {
       if (group.heading) lines.push(`    ${group.heading}`)
       for (const d of group.bullets) lines.push(`    * ${d}`)

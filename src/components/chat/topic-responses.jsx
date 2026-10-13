@@ -14,6 +14,7 @@ import {
   Github,
   Globe,
   Linkedin,
+  Lock,
   Mail,
   MapPin,
   Phone,
@@ -232,6 +233,173 @@ function AboutResponse() {
 
 /* ---------- Experience ---------- */
 
+const hostOf = (url) => new URL(url).hostname.replace(/^www\./, "")
+
+// A headline number. Interactive when `onClick` is given (the Freshdi tabs), otherwise plain.
+function StatTile({ value, label, active, onClick }) {
+  const className = cn(
+    "rounded-2xl px-3.5 py-3 text-left transition-colors max-sm:last:odd:col-span-2",
+    active ? "bg-[#004a77]" : "bg-secondary",
+    onClick && !active && "hover:bg-accent",
+  )
+  const content = (
+    <>
+      <div className={cn("text-2xl font-bold leading-none tracking-tight", active ? "text-[#c2e7ff]" : "text-[#a8c7fa]")}>
+        {value}
+      </div>
+      <div className="mt-1.5 text-xs leading-4 text-white/80">{label}</div>
+    </>
+  )
+  return onClick ? (
+    <button type="button" onClick={onClick} aria-pressed={active} className={className}>
+      {content}
+    </button>
+  ) : (
+    <div className={className}>{content}</div>
+  )
+}
+
+// A screenshot in a browser window, so a company site reads as a site and not as a loose picture.
+function BrowserShot({ image, onOpen }) {
+  return (
+    <figure>
+      <button
+        type="button"
+        onClick={onOpen}
+        aria-label={`Enlarge: ${image.alt}`}
+        className="group block w-full cursor-zoom-in overflow-hidden rounded-xl border border-white/10 bg-[#131314] text-left"
+      >
+        <div className="flex items-center gap-3 bg-[#2a2b2d] px-3 py-2">
+          <div className="flex gap-1.5">
+            <span className="size-2.5 rounded-full bg-[#ff5f57]" />
+            <span className="size-2.5 rounded-full bg-[#febc2e]" />
+            <span className="size-2.5 rounded-full bg-[#28c840]" />
+          </div>
+          <div className="flex min-w-0 flex-1 items-center gap-1.5 rounded-md bg-[#131314] px-2.5 py-1 text-[11px] text-white/70">
+            <Lock className="size-3 shrink-0" />
+            <span className="truncate">{image.url}</span>
+          </div>
+        </div>
+        <div className="relative aspect-[1280/808] overflow-hidden">
+          <Image
+            src={image.src}
+            alt={image.alt}
+            fill
+            sizes="(min-width: 768px) 340px, 90vw"
+            className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
+          />
+        </div>
+      </button>
+      <figcaption className="mt-2 text-center text-xs text-white/70">{image.caption}</figcaption>
+    </figure>
+  )
+}
+
+// Groups with a `metric` become tabs: the numbers up front, the detail one click away.
+function ImpactTabs({ groups }) {
+  const [active, setActive] = useState(0)
+  const group = groups[active]
+  return (
+    <div>
+      <div className="grid grid-cols-2 gap-2 sm:auto-cols-fr sm:grid-flow-col">
+        {groups.map((g, i) => (
+          <StatTile key={g.metric.label} {...g.metric} active={i === active} onClick={() => setActive(i)} />
+        ))}
+      </div>
+      <motion.div
+        key={active}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, ease: "easeOut" }}
+        className="mt-5"
+      >
+        <div className="mb-2.5 font-semibold leading-6">{group.heading}</div>
+        <Bullets items={group.bullets} />
+      </motion.div>
+    </div>
+  )
+}
+
+function ExperienceCard({ exp }) {
+  const [selected, setSelected] = useState(null)
+  const groups = experienceGroups(exp)
+  const hasTabs = groups.every((group) => group.metric)
+  const images = exp.images ?? []
+
+  return (
+    <>
+      <Card>
+        <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h3 className="text-lg font-bold">{exp.title}</h3>
+            {exp.link ? (
+              <a
+                href={exp.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center gap-1.5 font-medium text-[#a8c7fa] transition-colors hover:text-[#d3e3fd]"
+              >
+                {exp.company}
+                <ExternalLink className="size-3.5 opacity-60 transition-opacity group-hover:opacity-100" />
+              </a>
+            ) : (
+              <div className="font-medium text-[#a8c7fa]">{exp.company}</div>
+            )}
+            <div className="text-sm text-white">{exp.location}</div>
+          </div>
+          <div className="inline-flex items-center gap-2 rounded-full bg-secondary px-3.5 py-1.5 text-[13px] text-white">
+            <CalendarDays className="size-3.5 text-[#a8c7fa]" />
+            {exp.period}
+          </div>
+        </div>
+
+        {exp.stats && (
+          <div className="mb-5 grid grid-cols-2 gap-2 sm:auto-cols-fr sm:grid-flow-col">
+            {exp.stats.map((stat) => (
+              <StatTile key={stat.label} {...stat} />
+            ))}
+          </div>
+        )}
+
+        {images.length > 0 && (
+          <div className="mb-5 grid gap-4 sm:grid-cols-2">
+            {images.map((image) => (
+              <BrowserShot key={image.src} image={image} onOpen={() => setSelected(image)} />
+            ))}
+          </div>
+        )}
+
+        {hasTabs ? (
+          <ImpactTabs groups={groups} />
+        ) : (
+          groups.map((group, groupIndex) => (
+            <div key={group.heading ?? groupIndex} className={groupIndex > 0 ? "mt-5" : undefined}>
+              {group.heading && <div className="mb-2.5 font-semibold leading-6">{group.heading}</div>}
+              <Bullets items={group.bullets} />
+            </div>
+          ))
+        )}
+
+        <div className="mt-5 flex flex-wrap gap-2">
+          {exp.technologies.map((tech) => (
+            <TechChip key={tech}>{tech}</TechChip>
+          ))}
+        </div>
+
+        {exp.link && (
+          <div className="mt-5">
+            <PillLink href={exp.link} icon={Globe} external>
+              Visit {hostOf(exp.link)}
+            </PillLink>
+          </div>
+        )}
+      </Card>
+
+      {selected && <ImageLightbox src={selected.src} alt={selected.alt} onClose={() => setSelected(null)} />}
+    </>
+  )
+}
+
 function ExperienceResponse() {
   return (
     <div>
@@ -241,30 +409,7 @@ function ExperienceResponse() {
       <div className="space-y-3">
         {experiences.map((exp, i) => (
           <Reveal key={`${exp.company}-${exp.period}`} delay={0.08 + i * 0.1}>
-            <Card>
-              <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <h3 className="text-lg font-bold">{exp.title}</h3>
-                  <div className="font-medium text-[#a8c7fa]">{exp.company}</div>
-                  <div className="text-sm text-white">{exp.location}</div>
-                </div>
-                <div className="inline-flex items-center gap-2 rounded-full bg-secondary px-3.5 py-1.5 text-[13px] text-white">
-                  <CalendarDays className="size-3.5 text-[#a8c7fa]" />
-                  {exp.period}
-                </div>
-              </div>
-              {experienceGroups(exp).map((group, groupIndex) => (
-                <div key={group.heading ?? groupIndex} className={groupIndex > 0 ? "mt-5" : undefined}>
-                  {group.heading && <div className="mb-2.5 font-semibold leading-6">{group.heading}</div>}
-                  <Bullets items={group.bullets} />
-                </div>
-              ))}
-              <div className="mt-5 flex flex-wrap gap-2">
-                {exp.technologies.map((tech) => (
-                  <TechChip key={tech}>{tech}</TechChip>
-                ))}
-              </div>
-            </Card>
+            <ExperienceCard exp={exp} />
           </Reveal>
         ))}
       </div>

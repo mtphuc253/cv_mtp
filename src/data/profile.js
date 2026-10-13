@@ -29,14 +29,23 @@ export const profile = {
 
 // An experience lists its bullets either flat (`description`) or under bold lead-in
 // lines (`groups`). Use experienceGroups() to read either shape the same way.
+//
+// Optional extras shown on the card:
+//   link    company website (also gives the "Visit" button)
+//   images  screenshots of it: { src, alt, caption, url } — `url` is only the label in the browser frame
+//   stats   headline numbers for a flat list; groups use their own `metric` instead, and become tabs
 export const experiences = [
   {
     period: "SEP 2025 — PRESENT",
     title: "Software Engineer (Full-Stack, Data & AI Automation)",
     company: "Freshdi - Global B2B Marketplace",
     location: "Ho Chi Minh City, Vietnam",
+    link: "https://freshdi.com/",
+    // freshdi.com sits behind a Cloudflare bot check, so no screenshot yet: add { src, alt, caption, url } entries here.
+    images: [],
     groups: [
       {
+        metric: { value: "12x", label: "New users" },
         heading: "Built core product features end to end for suppliers and buyers, driving 12x growth in new users:",
         bullets: [
           "Sign-up, account verification and business-document verification flows, plus quick posting of quotation requests and products.",
@@ -46,6 +55,7 @@ export const experiences = [
         ],
       },
       {
+        metric: { value: "17", label: "MCP tools" },
         heading: "Worked AI-first every day and built AI-powered product features:",
         bullets: [
           "Used Claude across prototyping, debugging and shipping: wrote 8 internal AI guides so AI generates code that follows team standards, and used Claude Design to mock up demo UIs so BAs could settle ideas quickly.",
@@ -55,6 +65,7 @@ export const experiences = [
         ],
       },
       {
+        metric: { value: "5x", label: "Marketing productivity" },
         heading: "Automated content creation, boosting Marketing productivity 5x:",
         bullets: [
           "Built a blog pipeline on SEO templates: an LLM writes and paraphrases articles, adds images and real supplier, quotation and market data, and posts to WordPress on a schedule.",
@@ -63,6 +74,7 @@ export const experiences = [
         ],
       },
       {
+        metric: { value: "3x", label: "Sales team speed" },
         heading: "Built data pipelines and automated customer data collection (FFrape), making the Sales team 3x faster:",
         bullets: [
           "Scraped many B2B marketplaces (IndiaMart, Made-in-China…) using multiprocessing, rotating proxies and automatic captcha solving; used crawl4ai and Gemini to extract contact details.",
@@ -70,6 +82,7 @@ export const experiences = [
         ],
       },
       {
+        metric: { value: "2x", label: "SEO results" },
         heading: "Improved technical SEO and page speed, doubling SEO results (2x):",
         bullets: [
           "Separated public data (what Google reads) from per-user data and generated structured data (JSON-LD), meta tags and sitemaps on the server; built a Redis cache for self-refreshing static pages (ISR) on a self-hosted multi-process server (PM2).",
@@ -85,6 +98,26 @@ export const experiences = [
     title: "Fullstack Developer",
     company: "HUNGPHUC CONSTRUCTION",
     location: "Ho Chi Minh City, Vietnam",
+    link: "https://www.hungphuc.io.vn/",
+    images: [
+      {
+        src: "/companies/hungphuc/home.webp",
+        alt: "HungPhuc Construction website home page",
+        caption: "Company website",
+        url: "hungphuc.io.vn",
+      },
+      {
+        src: "/companies/hungphuc/cost-estimator.webp",
+        alt: "HungPhuc Construction AI cost estimator page",
+        caption: "AI cost estimator",
+        url: "hungphuc.io.vn/bang-gia",
+      },
+    ],
+    stats: [
+      { value: "30%+", label: "Organic traffic in 3 months" },
+      { value: "50%", label: "Workflow efficiency" },
+      { value: "20/wk", label: "AI-written articles" },
+    ],
     description: [
       "Built the company's website and REST API end-to-end with Next.js and Express + PostgreSQL, covering the project portfolio, pricing, news and contact forms.",
       "Developed an AI-powered cost estimator that combines a configurable pricing engine with an LLM (Gemini/Claude) to turn customers' free-text descriptions into estimates, then into sales leads.",
