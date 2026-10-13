@@ -204,10 +204,12 @@ export function CvBuilder() {
 
   return (
     <>
-      <div className={cn("flex h-dvh flex-col bg-background transition-opacity print:hidden", !ready && "opacity-0")}>
-        <header className="flex h-14 shrink-0 items-center gap-3 border-b px-3 sm:px-4">
-          <FileText className="size-5 text-[#a8c7fa]" />
-          <h1 className="text-[17px] font-medium tracking-tight">CV Builder</h1>
+      <div className="cv-app flex h-dvh flex-col bg-background print:hidden">
+        <header className="flex h-14 shrink-0 items-center gap-3 border-b bg-card/80 px-3 backdrop-blur sm:px-4">
+          <span className="grid size-8 place-items-center rounded-xl bg-brand-soft text-brand">
+            <FileText className="size-[18px]" />
+          </span>
+          <h1 className="text-[17px] font-semibold tracking-tight">CV Builder</h1>
           <button
             type="button"
             onClick={() => setLibraryOpen(true)}
@@ -216,13 +218,13 @@ export function CvBuilder() {
           >
             <FolderOpen className="size-4 shrink-0 text-muted-foreground" />
             <span className="hidden sm:inline">My CVs</span>
-            <span className="rounded-full bg-white/10 px-1.5 text-xs text-muted-foreground">{docs.length}</span>
+            <span className="rounded-full bg-card px-1.5 text-xs text-muted-foreground">{docs.length}</span>
           </button>
           <button
             type="button"
             onClick={libraryActions.saveAsNew}
             title="Keep this CV and continue in a new copy"
-            className="inline-flex h-9 items-center gap-2 rounded-full px-3 text-sm text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground"
+            className="inline-flex h-9 items-center gap-2 rounded-full px-3 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
             <CopyPlus className="size-4 shrink-0" />
             <span className="hidden md:inline">Save as new</span>
@@ -246,7 +248,7 @@ export function CvBuilder() {
                   onClick={() => setView(id)}
                   className={cn(
                     "inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-sm transition-colors",
-                    view === id ? "bg-[#a8c7fa]/20 text-[#d3e3fd]" : "text-muted-foreground",
+                    view === id ? "bg-card font-medium text-brand-ink shadow-sm" : "text-muted-foreground",
                   )}
                 >
                   <Icon className="size-4" />
@@ -257,7 +259,7 @@ export function CvBuilder() {
             <button
               type="button"
               onClick={printPdf}
-              className="inline-flex h-10 items-center gap-2 rounded-full bg-[#004a77] px-4 text-sm font-medium text-[#c2e7ff] transition-colors hover:bg-[#005a92] sm:px-5"
+              className="inline-flex h-10 items-center gap-2 rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground shadow-[0_4px_14px_-4px_rgba(27,42,74,0.55)] transition-colors hover:bg-primary/90 sm:px-5"
             >
               <Download className="size-4" />
               <span className="hidden sm:inline">Download PDF</span>
@@ -266,11 +268,12 @@ export function CvBuilder() {
           </div>
         </header>
 
-        <div className="flex min-h-0 flex-1">
+        {/* Hidden until the saved CVs are loaded, so the sample CV never flashes. The header stays. */}
+        <div className={cn("flex min-h-0 flex-1 transition-opacity", !ready && "opacity-0")}>
           <motion.aside
             layoutScroll
             className={cn(
-              "min-h-0 w-full shrink-0 overflow-y-auto p-3 sm:p-4 lg:block lg:w-[460px] lg:border-r",
+              "min-h-0 w-full shrink-0 overflow-y-auto p-3 sm:p-4 lg:block lg:w-[540px] lg:border-r xl:w-[620px]",
               view === "edit" ? "block" : "hidden",
             )}
           >
@@ -281,16 +284,16 @@ export function CvBuilder() {
               onImport={libraryActions.importFile}
               onOpenLibrary={() => setLibraryOpen(true)}
             />
-            <p className="px-1 pt-4 text-[11px] leading-relaxed text-muted-foreground/70">
+            <p className="px-1 pt-4 text-[11px] leading-relaxed text-muted-foreground">
               Tip: in the print dialog choose &ldquo;Save as PDF&rdquo; and turn off &ldquo;Headers and footers&rdquo;.
             </p>
           </motion.aside>
 
           <main
             ref={previewRef}
-            className={cn("min-h-0 min-w-0 flex-1 overflow-auto bg-[#1b1b1c] p-4 sm:p-6", view === "preview" ? "block" : "hidden", "lg:block")}
+            className={cn("min-h-0 min-w-0 flex-1 overflow-auto bg-[var(--cv-canvas)] p-4 sm:p-6", view === "preview" ? "block" : "hidden", "lg:block")}
           >
-            <div className="mx-auto shadow-[0_8px_40px_rgba(0,0,0,0.5)]" style={{ width: "210mm", zoom: scale }}>
+            <div className="mx-auto shadow-[0_12px_40px_-12px_rgba(30,50,110,0.35),0_0_0_1px_rgba(23,33,58,0.05)]" style={{ width: "210mm", zoom: scale }}>
               <CvDocument cv={cv} />
             </div>
           </main>

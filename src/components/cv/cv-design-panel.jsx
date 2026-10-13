@@ -2,12 +2,13 @@
 
 import { useDeferredValue, useEffect, useRef, useState } from "react"
 import { Reorder, useDragControls } from "framer-motion"
-import { Check, Eye, EyeOff, GripVertical, PanelLeft, Plus, RotateCcw, Trash2 } from "lucide-react"
+import { Eye, EyeOff, GripVertical, PanelLeft, Plus, RotateCcw, Trash2 } from "lucide-react"
+import { CvColorPicker } from "@/components/cv/cv-color-picker"
 import { CvDocument } from "@/components/cv/cv-document"
 import { IconButton, Panel, Segmented, SelectField, Slider, Toggle } from "@/components/cv/cv-controls"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ACCENTS, DEFAULT_DESIGN, OPTIONS, RANGES, TEMPLATES, isPresetActive } from "@/lib/cv-design"
+import { DEFAULT_DESIGN, OPTIONS, RANGES, TEMPLATES, isPresetActive } from "@/lib/cv-design"
 import { FONT_GROUPS, customFamily, customFontId, isCustomFontId, loadGoogleFont } from "@/lib/cv-fonts"
 import { SECTION_PRESETS } from "@/lib/cv-sections"
 import { cn } from "@/lib/utils"
@@ -24,12 +25,12 @@ function TemplateCard({ template, cv, active, onPick }) {
       aria-pressed={active}
       title={template.hint}
       onClick={onPick}
-      className={cn("grid justify-items-center gap-1.5 rounded-xl border p-2 transition-colors hover:bg-white/5", active && "border-[#a8c7fa] bg-[#a8c7fa]/10")}
+      className={cn("grid justify-items-center gap-1.5 rounded-xl border p-2 transition-colors hover:bg-accent/60", active && "border-brand bg-brand-soft hover:bg-brand-soft")}
     >
       <div
         inert
         aria-hidden
-        className="pointer-events-none overflow-hidden rounded-[3px] bg-white shadow-md"
+        className="pointer-events-none overflow-hidden rounded-[3px] bg-white shadow-[0_2px_10px_-2px_rgba(23,33,58,0.25),0_0_0_1px_rgba(23,33,58,0.06)]"
         style={{ width: `${210 * THUMB_ZOOM}mm`, height: `${297 * THUMB_ZOOM}mm` }}
       >
         <div style={{ zoom: THUMB_ZOOM }}>
@@ -37,7 +38,7 @@ function TemplateCard({ template, cv, active, onPick }) {
         </div>
       </div>
       <span className="text-[13px] font-medium leading-tight">{template.name}</span>
-      <span className={cn("rounded-full px-1.5 py-px text-[10px]", single ? "bg-emerald-400/15 text-emerald-300" : "bg-white/10 text-muted-foreground")}>
+      <span className={cn("rounded-full px-1.5 py-px text-[10px]", single ? "bg-emerald-50 text-emerald-700" : "bg-secondary text-muted-foreground")}>
         {single ? "ATS-friendly" : "Two columns"}
       </span>
     </button>
@@ -49,7 +50,7 @@ function TemplatePicker({ cv, setCv }) {
   const deferred = useDeferredValue(cv)
   return (
     <>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4">
         {TEMPLATES.map((template) => (
           <TemplateCard
             key={template.id}
@@ -60,7 +61,7 @@ function TemplatePicker({ cv, setCv }) {
           />
         ))}
       </div>
-      <p className="text-[11px] leading-relaxed text-muted-foreground/70">
+      <p className="text-[11px] leading-relaxed text-muted-foreground">
         A template is a starting look; every option below can still be changed. One-column layouts are the safest for applicant tracking systems, while
         two-column designs read well for people but can confuse parsers.
       </p>
@@ -126,7 +127,7 @@ function FontPicker({ value, onChange }) {
               {status === "checking" ? "Loading…" : "Use"}
             </Button>
           </div>
-          <p className={cn("text-[11px]", status === "missing" || status === "invalid" ? "text-destructive" : "text-muted-foreground/70")}>
+          <p className={cn("text-[11px]", status === "missing" || status === "invalid" ? "text-destructive" : "text-muted-foreground")}>
             {status === "missing"
               ? "Google Fonts doesn't have a family with that name."
               : status === "invalid"
@@ -169,7 +170,7 @@ function SectionRow({ section, index, count, sidebar, onPatch, onMove, onDelete 
       value={section}
       dragListener={false}
       dragControls={controls}
-      whileDrag={{ scale: 1.02, boxShadow: "0 8px 24px rgba(0, 0, 0, 0.45)" }}
+      whileDrag={{ scale: 1.02, boxShadow: "0 8px 24px rgba(23, 33, 58, 0.2)" }}
       className="relative flex items-center gap-0.5 rounded-xl bg-card"
     >
       <button
@@ -179,7 +180,7 @@ function SectionRow({ section, index, count, sidebar, onPatch, onMove, onDelete 
         title="Drag to reorder"
         onPointerDown={(event) => controls.start(event)}
         onKeyDown={onKeyDown}
-        className="grid size-8 shrink-0 cursor-grab touch-none place-items-center rounded-full text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground active:cursor-grabbing"
+        className="grid size-8 shrink-0 cursor-grab touch-none place-items-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground active:cursor-grabbing"
       >
         <GripVertical className="size-4" />
       </button>
@@ -221,7 +222,7 @@ export function AddSection({ onAdd }) {
                 onAdd(preset)
                 setOpen(false)
               }}
-              className="rounded-full border px-3 py-1 text-[13px] transition-colors hover:bg-white/10"
+              className="rounded-full border px-3 py-1 text-[13px] transition-colors hover:bg-accent"
             >
               {preset.label}
             </button>
@@ -264,36 +265,12 @@ export function CvDesignPanels({ cv, setCv, onAddSection, onDeleteSection }) {
       </Panel>
 
       <Panel title="Color & typography">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="mr-1 text-xs font-medium text-muted-foreground">Accent</span>
-          {ACCENTS.map((color) => (
-            <button
-              key={color}
-              type="button"
-              aria-label={`Accent ${color}`}
-              aria-pressed={design.accent === color}
-              onClick={() => setDesign({ accent: color })}
-              className={cn("grid size-7 place-items-center rounded-full border-2 border-transparent transition-transform hover:scale-110", design.accent === color && "border-white")}
-              style={{ backgroundColor: color }}
-            >
-              {design.accent === color && <Check className="size-3.5 text-white" />}
-            </button>
-          ))}
-          <label className="relative grid size-7 cursor-pointer place-items-center overflow-hidden rounded-full border border-dashed text-muted-foreground" title="Custom color">
-            <Plus className="size-3.5" />
-            <input
-              type="color"
-              aria-label="Custom accent color"
-              value={design.accent}
-              onChange={(event) => setDesign({ accent: event.target.value })}
-              className="absolute inset-0 cursor-pointer opacity-0"
-            />
-          </label>
-        </div>
+        <CvColorPicker value={design.accent} onChange={(accent) => setDesign({ accent })} />
         {/* Keyed by font so its draft state follows template picks and CV switches. */}
         <FontPicker key={design.font} value={design.font} onChange={(font) => setDesign({ font })} />
         {slider("fontSize")}
         {slider("lineHeight")}
+        {choice("nameStyle", "Name", 3)}
         {choice("headingStyle", "Section headings", 3)}
         <Toggle label="Uppercase headings" checked={design.uppercase} onChange={(uppercase) => setDesign({ uppercase })} />
         {choice("bulletStyle", "Bullets", 4)}
@@ -316,6 +293,7 @@ export function CvDesignPanels({ cv, setCv, onAddSection, onDeleteSection }) {
             {slider("sidebarWidth")}
           </>
         )}
+        {choice("entryStyle", "Entries")}
         {choice("photoShape", "Photo shape")}
         {slider("margin")}
         {slider("sectionGap")}

@@ -30,6 +30,51 @@
   text-decoration: none;
 }
 
+/* Rich text (summary, descriptions). Tailwind's reset strips list styling, so it is set here. */
+.cv-rich > :first-child {
+  margin-top: 0;
+}
+
+.cv-rich p {
+  margin: 0;
+}
+
+.cv-rich p + p {
+  margin-top: 0.35em;
+}
+
+.cv-rich ul,
+.cv-rich ol {
+  margin: 0.3em 0 0;
+  padding-left: 1.4em;
+}
+
+.cv-rich ul {
+  list-style-type: var(--cv-bullet, disc);
+}
+
+.cv-rich ol {
+  list-style-type: decimal;
+}
+
+.cv-rich li {
+  margin-top: 0.2em;
+  break-inside: avoid;
+}
+
+.cv-rich li:first-child {
+  margin-top: 0;
+}
+
+.cv-rich li::marker {
+  color: var(--cv-faint);
+}
+
+.cv-paper .cv-rich a {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
 @media print {
   html,
   body {
@@ -41,4 +86,120 @@
     min-height: 0;
     padding: 0;
   }
+}
+
+/*
+  Light theme of the builder (/resumes). The rest of the site is dark, so this redefines the
+  theme tokens for everything inside .cv-app. The drawer renders in a portal outside the page,
+  so it carries the class itself. Tones: a cool blue-grey canvas with white cards, deep navy
+  ink, and one blue for selected states (brand), after FlowCV's calm light interface.
+*/
+.cv-app {
+  color-scheme: light;
+  /* The text colour is inherited from <body>, which is the dark theme's. */
+  color: var(--foreground);
+  --background: #eef2f9;
+  --foreground: #111a30;
+  --card: #ffffff;
+  --card-foreground: #17213a;
+  --popover: #ffffff;
+  --popover-foreground: #17213a;
+  --primary: #1b2a4a;
+  --primary-foreground: #ffffff;
+  --secondary: #edf1f9;
+  --secondary-foreground: #24304d;
+  --muted: #edf1f9;
+  --muted-foreground: #4b5872;
+  --accent: #e4eaf7;
+  --accent-foreground: #17213a;
+  --destructive: #d14343;
+  --border: #e0e6f1;
+  --input: #d2dae9;
+  --ring: #6b8ced;
+  --brand: #3b62dc;
+  --brand-foreground: #ffffff;
+  --brand-soft: #e6edff;
+  --brand-ink: #2744b0;
+  --cv-canvas: #e2e9f5;
+}
+
+.cv-app,
+.cv-app * {
+  scrollbar-color: rgba(23, 33, 58, 0.22) transparent;
+}
+
+/* Rich-text editor: the same lists and spacing as the sheet, at screen size. */
+.cv-editor .ProseMirror {
+  min-height: calc(var(--rows, 4) * 1.5em + 1.25rem);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  outline: none;
+}
+
+.cv-editor .ProseMirror p {
+  margin: 0;
+}
+
+.cv-editor .ProseMirror p + p {
+  margin-top: 0.5em;
+}
+
+.cv-editor .ProseMirror ul,
+.cv-editor .ProseMirror ol {
+  margin: 0.25em 0;
+  padding-left: 1.25rem;
+}
+
+.cv-editor .ProseMirror ul {
+  list-style: disc;
+}
+
+.cv-editor .ProseMirror ol {
+  list-style: decimal;
+}
+
+.cv-editor .ProseMirror li > p {
+  margin: 0;
+}
+
+.cv-editor .ProseMirror a {
+  color: var(--brand-ink);
+  text-decoration: underline;
+  cursor: text;
+}
+
+/* RGB sliders: the track shows the colours the channel can take (set in --track). */
+.cv-rgb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--track);
+  outline: none;
+  cursor: pointer;
+}
+
+.cv-rgb::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--thumb);
+  box-shadow: 0 1px 4px rgba(23, 33, 58, 0.4);
+}
+
+.cv-rgb::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--thumb);
+  box-shadow: 0 1px 4px rgba(23, 33, 58, 0.4);
+}
+
+.cv-rgb:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
 }

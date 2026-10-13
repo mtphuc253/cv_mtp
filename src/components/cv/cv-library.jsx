@@ -18,12 +18,12 @@ function DocCard({ doc, active, canDelete, onOpen, onRename, onDuplicate, onDele
   const updated = new Date(doc.updatedAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })
 
   return (
-    <div className={cn("flex gap-3 rounded-2xl border p-3", active && "border-[#a8c7fa] bg-[#a8c7fa]/5")}>
+    <div className={cn("flex gap-3 rounded-2xl border bg-card p-3", active && "border-brand bg-brand-soft/40")}>
       <button type="button" onClick={onOpen} aria-label={`Open ${doc.name}`} className="shrink-0 self-start">
         <div
           inert
           aria-hidden
-          className="pointer-events-none overflow-hidden rounded-[3px] bg-white shadow-md"
+          className="pointer-events-none overflow-hidden rounded-[3px] bg-white shadow-[0_2px_10px_-2px_rgba(23,33,58,0.25),0_0_0_1px_rgba(23,33,58,0.06)]"
           style={{ width: `${210 * THUMB_ZOOM}mm`, height: `${297 * THUMB_ZOOM}mm` }}
         >
           <div style={{ zoom: THUMB_ZOOM }}>
@@ -48,7 +48,7 @@ function DocCard({ doc, active, canDelete, onOpen, onRename, onDuplicate, onDele
         </p>
         <div className="mt-1 flex flex-wrap items-center gap-0.5">
           {active ? (
-            <span className="mr-1 rounded-full bg-[#a8c7fa]/20 px-2.5 py-1 text-xs text-[#d3e3fd]">Editing</span>
+            <span className="mr-1 rounded-full bg-brand-soft px-2.5 py-1 text-xs font-medium text-brand-ink">Editing</span>
           ) : (
             <Button variant="secondary" size="sm" className="mr-1" onClick={onOpen}>
               Open
@@ -163,7 +163,7 @@ function TransferPanel({ actions }) {
             className="font-mono text-xs"
           />
           <label className="flex cursor-pointer items-center gap-2 text-xs text-muted-foreground">
-            <input type="checkbox" checked={replace} onChange={(event) => setReplace(event.target.checked)} className="size-4 accent-[#a8c7fa]" />
+            <input type="checkbox" checked={replace} onChange={(event) => setReplace(event.target.checked)} className="size-4 accent-brand" />
             Replace the CVs in this browser (otherwise they are added to them)
           </label>
           <Button size="sm" className="justify-self-start" disabled={!text.trim()} onClick={runImport}>
@@ -173,7 +173,7 @@ function TransferPanel({ actions }) {
       )}
 
       {status && (
-        <p role="status" className={cn("text-xs", status.ok ? "text-emerald-300" : "text-destructive")}>
+        <p role="status" className={cn("text-xs", status.ok ? "text-emerald-700" : "text-destructive")}>
           {status.message}
         </p>
       )}
@@ -185,7 +185,8 @@ function TransferPanel({ actions }) {
 export function CvLibrary({ open, onOpenChange, docs, activeId, actions }) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="left" className="w-full gap-0 sm:max-w-lg print:hidden">
+      {/* The drawer is rendered in a portal, outside the page's .cv-app, so it sets the light theme itself. */}
+      <SheetContent side="left" className="cv-app w-full gap-0 sm:max-w-lg print:hidden">
         <SheetHeader className="pr-12">
           <SheetTitle className="text-lg">My CVs</SheetTitle>
           <SheetDescription>Saved in this browser only. Each CV keeps its own template and design.</SheetDescription>

@@ -4,12 +4,13 @@
 
 export const uid = () => globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2)
 
-// text: one free-form paragraph. The others hold a list of entries with these fields.
+// text: one free-form rich-text block. The others hold a list of entries with these fields;
+// `description` is rich text too (bullets, technologies, links), the rest is plain text.
 export const KINDS = {
   text: { fields: null },
-  entries: { fields: ["title", "company", "location", "period", "bullets", "tech"] },
-  projects: { fields: ["name", "role", "link", "bullets", "tech"] },
-  education: { fields: ["degree", "school", "location", "period", "bullets"] },
+  entries: { fields: ["title", "company", "location", "period", "description"] },
+  projects: { fields: ["name", "role", "link", "description"] },
+  education: { fields: ["degree", "school", "location", "period", "description"] },
   skills: { fields: ["title", "items"] },
   list: { fields: ["title", "detail"] },
 }

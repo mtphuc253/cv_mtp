@@ -5,19 +5,20 @@ import { cn } from "@/lib/utils"
 
 // Small form controls shared by the content editor and the design panels.
 
-export function Field({ label, hint, className, children }) {
+// A <label> by default; use as="div" around a control that is not a native input (the rich-text editor).
+export function Field({ as: Tag = "label", label, hint, className, children }) {
   return (
-    <label className={cn("grid min-w-0 content-start gap-1.5", className)}>
+    <Tag className={cn("grid min-w-0 content-start gap-1.5", className)}>
       <span className="text-xs font-medium text-muted-foreground">{label}</span>
       {children}
-      {hint && <span className="text-[11px] text-muted-foreground/70">{hint}</span>}
-    </label>
+      {hint && <span className="text-[11px] text-muted-foreground">{hint}</span>}
+    </Tag>
   )
 }
 
 export function Panel({ title, count, defaultOpen = false, children }) {
   return (
-    <details open={defaultOpen} className="group/panel rounded-2xl border bg-card">
+    <details open={defaultOpen} className="group/panel rounded-2xl border bg-card shadow-[0_1px_2px_rgba(23,33,58,0.04),0_6px_20px_-12px_rgba(40,70,140,0.18)]">
       <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-3 [&::-webkit-details-marker]:hidden">
         <span className="flex-1 text-[15px] font-medium">{title}</span>
         {count > 0 && <span className="rounded-full bg-secondary px-2 py-0.5 text-xs text-muted-foreground">{count}</span>}
@@ -38,8 +39,8 @@ export function IconButton({ label, onClick, disabled, pressed, children }) {
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        "grid size-8 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground disabled:pointer-events-none disabled:opacity-30",
-        pressed && "bg-[#a8c7fa]/20 text-[#d3e3fd]",
+        "grid size-8 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-30",
+        pressed && "bg-brand-soft text-brand-ink hover:bg-brand-soft",
       )}
     >
       {children}
@@ -66,7 +67,7 @@ export function Segmented({ label, hideLabel, options, value, onChange, cols }) 
             onClick={() => onChange(option.id)}
             className={cn(
               "h-8 truncate rounded-full px-2 text-[13px] transition-colors",
-              value === option.id ? "bg-[#a8c7fa]/20 text-[#d3e3fd]" : "text-muted-foreground hover:text-foreground",
+              value === option.id ? "bg-card font-medium text-brand-ink shadow-sm" : "text-muted-foreground hover:text-foreground",
             )}
           >
             {option.label}
@@ -94,7 +95,7 @@ export function Slider({ label, value, onChange, range }) {
         step={range.step}
         value={value}
         onChange={(event) => onChange(Number(event.target.value))}
-        className="w-full accent-[#a8c7fa]"
+        className="w-full accent-brand"
       />
     </label>
   )
@@ -104,7 +105,7 @@ export function Toggle({ label, checked, onChange }) {
   return (
     <label className="flex cursor-pointer items-center justify-between gap-3 text-sm">
       {label}
-      <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} className="size-4 accent-[#a8c7fa]" />
+      <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} className="size-4 accent-brand" />
     </label>
   )
 }
@@ -115,7 +116,7 @@ export function SelectField({ label, hint, value, onChange, children }) {
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-9 w-full rounded-md border border-input bg-card px-3 text-sm outline-none [color-scheme:dark] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        className="h-9 w-full rounded-md border border-input bg-card px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
       >
         {children}
       </select>

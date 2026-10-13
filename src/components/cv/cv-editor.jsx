@@ -4,10 +4,12 @@ import { useRef, useState } from "react"
 import { ArrowDown, ArrowUp, ChevronDown, Download, FileUp, FolderOpen, ImagePlus, Plus, Trash2, X } from "lucide-react"
 import { Field, IconButton, Panel, Segmented } from "@/components/cv/cv-controls"
 import { AddSection, CvDesignPanels } from "@/components/cv/cv-design-panel"
+import { CvRichEditor } from "@/components/cv/cv-rich-editor"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { withSection, withoutSection } from "@/lib/cv-data"
+import { isRichEmpty } from "@/lib/cv-rich"
 import { newItem, newSection } from "@/lib/cv-sections"
 import { cn } from "@/lib/utils"
 
@@ -27,9 +29,10 @@ const BASIC_FIELDS = [
   { key: "github", label: "GitHub", placeholder: "github.com/you", full: true },
 ]
 
-const BULLETS_HINT = "One bullet per line."
+const TECH_HINT = "Bullets, bold and links. Put the technologies in the same text, e.g. a last line “Tech: React, Node.js”."
 
-// How each kind of section is edited. `label` is the collapsed row's title.
+// How each kind of section is edited. `label` is the collapsed row's title. A `rich` field is
+// the rich-text editor; `rows` is its minimum height in lines.
 const KIND_EDITORS = {
   entries: {
     noun: "entry",
@@ -39,8 +42,7 @@ const KIND_EDITORS = {
       { key: "company", label: "Organization" },
       { key: "period", label: "Period", placeholder: "SEP 2024 — SEP 2025" },
       { key: "location", label: "Location" },
-      { key: "bullets", label: "Highlights", type: "textarea", rows: 6, hint: BULLETS_HINT, full: true },
-      { key: "tech", label: "Technologies", placeholder: "React, Node.js, PostgreSQL", full: true },
+      { key: "description", label: "Description", type: "rich", rows: 8, hint: TECH_HINT, full: true },
     ],
   },
   projects: {
@@ -50,8 +52,7 @@ const KIND_EDITORS = {
       { key: "name", label: "Project name", full: true },
       { key: "role", label: "Your role" },
       { key: "link", label: "Link", placeholder: "github.com/you/project" },
-      { key: "bullets", label: "Description", type: "textarea", rows: 5, hint: BULLETS_HINT, full: true },
-      { key: "tech", label: "Technologies", placeholder: "Next.js, PostgreSQL", full: true },
+      { key: "description", label: "Description", type: "rich", rows: 6, hint: TECH_HINT, full: true },
     ],
   },
   education: {
@@ -62,7 +63,7 @@ const KIND_EDITORS = {
       { key: "school", label: "School" },
       { key: "period", label: "Period", placeholder: "09/2021 - Present" },
       { key: "location", label: "Location", full: true },
-      { key: "bullets", label: "Highlights", type: "textarea", rows: 3, hint: BULLETS_HINT, full: true },
+      { key: "description", label: "Highlights", type: "rich", rows: 4, full: true },
     ],
   },
   skills: {
@@ -102,8 +103,16 @@ function ItemFields({ config, item, onChange }) {
   return (
     <div className="grid grid-cols-2 gap-3 border-t px-3 pb-3 pt-3">
       {config.fields.map((field) => (
-        <Field key={field.key} label={field.label} hint={field.hint} className={field.full ? "col-span-2" : undefined}>
-          {field.type === "textarea" ? (
+        <Field
+          key={field.key}
+          as={field.type === "rich" ? "div" : "label"}
+          label={field.label}
+          hint={field.hint}
+          className={field.full ? "col-span-2" : undefined}
+        >
+          {field.type === "rich" ? (
+            <CvRichEditor label={field.label} rows={field.rows} value={item[field.key]} onChange={(html) => onChange(item.id, field.key, html)} />
+          ) : field.type === "textarea" ? (
             <Textarea rows={field.rows} value={item[field.key]} onChange={(event) => onChange(item.id, field.key, event.target.value)} />
           ) : (
             <Input value={item[field.key]} placeholder={field.placeholder} onChange={(event) => onChange(item.id, field.key, event.target.value)} />
@@ -201,7 +210,7 @@ export function CvEditor({ cv, setCv, onExport, onImport, onOpenLibrary }) {
 
   const deleteSection = (section) => {
     const content = cv.content[section.id]
-    const filled = typeof content === "string" ? content.trim() !== "" : content?.length > 0
+    const filled = typeof content === "string" ? !isRichEmpty(content) : content?.length > 0
     if (filled && !window.confirm(`Delete “${section.title}” and everything in it?`)) return
     setCv((c) => withoutSection(c, section.id))
   }
@@ -261,13 +270,13 @@ export function CvEditor({ cv, setCv, onExport, onImport, onOpenLibrary }) {
                 checked={basics.showPhoto}
                 disabled={!basics.photo}
                 onChange={(event) => setBasic("showPhoto", event.target.checked)}
-                className="size-4 accent-[#a8c7fa]"
+                className="size-4 accent-brand"
               />
               Show on CV
             </label>
             <input ref={photoInput} type="file" accept="image/*" hidden onChange={pickPhoto} />
           </div>
-          <p className="text-[11px] text-muted-foreground/70">Photos are optional and some ATS ignore them. A one-column template is the safest.</p>
+          <p className="text-[11px] text-muted-foreground">Photos are optional and some ATS ignore them. A one-column template is the safest.</p>
         </Panel>
 
         {cv.sections.map((section) => {
@@ -276,11 +285,11 @@ export function CvEditor({ cv, setCv, onExport, onImport, onOpenLibrary }) {
           if (section.kind === "text") {
             return (
               <Panel key={section.id} title={title} defaultOpen={open}>
-                <Textarea
-                  rows={5}
-                  aria-label={section.title}
+                <CvRichEditor
+                  label={section.title}
+                  rows={6}
                   value={cv.content[section.id] ?? ""}
-                  onChange={(event) => setCv((c) => ({ ...c, content: { ...c.content, [section.id]: event.target.value } }))}
+                  onChange={(html) => setCv((c) => ({ ...c, content: { ...c.content, [section.id]: html } }))}
                 />
               </Panel>
             )

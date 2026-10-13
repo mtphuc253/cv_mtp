@@ -1,8 +1,9 @@
 "use client"
 
-import { createContext, useContext, useEffect } from "react"
-import { stripProtocol, toHref } from "@/lib/cv-data"
+import { createContext, useContext, useEffect, useMemo } from "react"
 import { fontStack, googleFamily, loadGoogleFont } from "@/lib/cv-fonts"
+import { isRichEmpty, sanitizeRich } from "@/lib/cv-rich"
+import { stripProtocol, toHref } from "@/lib/cv-url"
 import { cn } from "@/lib/utils"
 
 // The printable CV. Plain semantic markup with real text (no images of text) so the
@@ -30,14 +31,12 @@ const DARK_VARS = {
   "--cv-faint": "rgba(255, 255, 255, 0.55)",
 }
 
+// The "dark" sidebar is a fixed deep navy whatever the accent is; the accent only tints its titles.
+const DARK_PANEL = "#1b2638"
+const darkInk = ({ sidebarStyle, accent }) => (sidebarStyle === "dark" ? `color-mix(in srgb, ${accent} 40%, white)` : "#fff")
+
 const BULLETS = { disc: "disc", square: "square", dash: '"–  "', arrow: '"›  "' }
 const PHOTO_SHAPE = { circle: "rounded-full", rounded: "rounded-[0.9em]", square: "rounded-none" }
-
-const lines = (text) =>
-  text
-    .split("\n")
-    .map((line) => line.trim().replace(/^[-•*]\s+/, ""))
-    .filter(Boolean)
 
 const tags = (text) =>
   text
@@ -45,7 +44,8 @@ const tags = (text) =>
     .map((tag) => tag.trim())
     .filter(Boolean)
 
-const notBlank = (item) => Object.entries(item).some(([key, value]) => key !== "id" && String(value).trim())
+const notBlank = (item) =>
+  Object.entries(item).some(([key, value]) => key !== "id" && (key === "description" ? !isRichEmpty(value) : String(value).trim()))
 
 const joinDot = (...parts) => parts.filter(Boolean).join(" · ")
 
@@ -101,24 +101,30 @@ function ContactLine({ basics, vertical, className }) {
   )
 }
 
-function Bullets({ text }) {
-  const { design } = useCv()
-  const items = lines(text)
-  if (!items.length) return null
-  return (
-    <ul className="mt-[0.3em] space-y-[0.2em] pl-[1.4em] marker:text-[color:var(--cv-faint)]" style={{ listStyleType: BULLETS[design.bulletStyle] }}>
-      {items.map((line, index) => (
-        <li key={index} className="break-inside-avoid">{line}</li>
-      ))}
-    </ul>
-  )
+// Descriptions and summaries. The markup is rebuilt from an allow-list first (see cv-rich.js),
+// so it is safe to inject; it stays real <p>, <ul> and <li> so the PDF text is parseable.
+// Bullet style and spacing come from the .cv-rich rules in cv.css.
+function RichText({ html, className }) {
+  const clean = useMemo(() => sanitizeRich(html), [html])
+  if (isRichEmpty(clean)) return null
+  return <div className={cn("cv-rich", className)} dangerouslySetInnerHTML={{ __html: clean }} />
 }
 
-function headingProps({ headingStyle, uppercase, accent }, { small = false, dark = false } = {}) {
+// `darkInk` is the heading colour on a dark panel (white unless given).
+function headingProps({ headingStyle, uppercase, accent }, { small = false, dark = false, darkInk = "#fff" } = {}) {
   const base = cn("break-after-avoid font-bold", small ? "text-[1em]" : "text-[1.1em]", uppercase && "uppercase tracking-[0.12em]")
-  const ink = dark ? "#fff" : accent
+  const ink = dark ? darkInk : accent
   const strong = dark ? "#fff" : "var(--cv-strong)"
   switch (headingStyle) {
+    case "thick":
+      return { className: cn(base, "border-b-[0.2em] pb-[0.2em]"), style: { color: strong, borderColor: ink } }
+    case "pill":
+      return {
+        className: cn(base, "w-fit rounded-full px-[0.9em] py-[0.12em]"),
+        style: dark ? { backgroundColor: "rgba(255, 255, 255, 0.16)", color: "#fff" } : { backgroundColor: accent, color: "#fff" },
+      }
+    case "box":
+      return { className: cn(base, "w-fit rounded-[0.25em] border-[0.1em] px-[0.7em] py-[0.1em]"), style: { color: strong, borderColor: ink } }
     case "line":
       return { className: cn(base, "border-b pb-[0.15em]"), style: { color: strong, borderColor: dark ? "rgba(255, 255, 255, 0.7)" : strong } }
     case "accent-line":
@@ -141,13 +147,16 @@ function headingProps({ headingStyle, uppercase, accent }, { small = false, dark
 }
 
 function Section({ title, heading, side, children }) {
+  const { design } = useCv()
+  // On a timeline each entry carries its own gap, so the vertical line stays unbroken.
+  const gap = design.entryStyle === "timeline" ? "" : "space-y-[var(--cv-entry-gap)]"
   if (side) {
     return (
       <section className="mt-[var(--cv-section-gap)] grid grid-cols-[8.5em_minmax(0,1fr)] gap-[1.2em]">
         <h2 className={cn("self-start", heading.className)} style={heading.style}>
           {title}
         </h2>
-        <div className="space-y-[var(--cv-entry-gap)]">{children}</div>
+        <div className={gap}>{children}</div>
       </section>
     )
   }
@@ -156,16 +165,28 @@ function Section({ title, heading, side, children }) {
       <h2 className={heading.className} style={heading.style}>
         {title}
       </h2>
-      <div className="mt-[0.5em] space-y-[var(--cv-entry-gap)]">{children}</div>
+      <div className={cn("mt-[0.5em]", gap)}>{children}</div>
     </section>
   )
 }
 
-function Entry({ title, subtitle, period, bullets, tech = "", stacked }) {
+function Entry({ title, subtitle, period, description, stacked }) {
+  const { design } = useCv()
+  const timeline = design.entryStyle === "timeline" && !stacked
   const periodLine = period && <p className={cn("whitespace-nowrap text-[0.95em]", T.muted)}>{period}</p>
   return (
-    <div>
-      {/* The title block never ends a page on its own; each bullet is kept whole, so a long entry can still flow onto the next page. */}
+    <div
+      className={cn(timeline && "relative ml-[0.3em] border-l pb-[var(--cv-entry-gap)] pl-[1em] last:pb-0")}
+      style={timeline ? { borderColor: `color-mix(in srgb, ${design.accent} 55%, white)` } : undefined}
+    >
+      {timeline && (
+        <span
+          aria-hidden
+          className="absolute -left-[0.3em] top-[0.4em] size-[0.55em] rounded-full ring-[0.15em] ring-white"
+          style={{ backgroundColor: design.accent }}
+        />
+      )}
+      {/* The title block never ends a page on its own; each list item is kept whole, so a long entry can still flow onto the next page. */}
       <div className="break-after-avoid">
         <div className="flex items-baseline justify-between gap-[1em]">
           {title && <h3 className={cn("min-w-0 text-[1.1em] font-semibold", T.strong)}>{title}</h3>}
@@ -174,12 +195,7 @@ function Entry({ title, subtitle, period, bullets, tech = "", stacked }) {
         {subtitle && <p className={T.soft}>{subtitle}</p>}
         {stacked && periodLine}
       </div>
-      <Bullets text={bullets} />
-      {tech.trim() && (
-        <p className={cn("mt-[0.3em] text-[0.95em]", T.muted)}>
-          <span className="font-semibold">Tech:</span> {tech}
-        </p>
-      )}
+      <RichText html={description} className="mt-[0.3em]" />
     </div>
   )
 }
@@ -187,10 +203,15 @@ function Entry({ title, subtitle, period, bullets, tech = "", stacked }) {
 function SkillRows({ rows }) {
   const { design, dark } = useCv()
 
-  if (design.skillStyle === "tags") {
+  if (design.skillStyle === "tags" || design.skillStyle === "outline") {
+    const outline = design.skillStyle === "outline"
     const tagStyle = dark
-      ? { backgroundColor: "rgba(255, 255, 255, 0.18)", color: "#fff" }
-      : { backgroundColor: `color-mix(in srgb, ${design.accent} 12%, white)`, color: "var(--cv-strong)" }
+      ? outline
+        ? { border: "1px solid rgba(255, 255, 255, 0.55)", color: "#fff" }
+        : { backgroundColor: "rgba(255, 255, 255, 0.18)", color: "#fff" }
+      : outline
+        ? { border: `1px solid color-mix(in srgb, ${design.accent} 55%, white)`, color: "var(--cv-strong)" }
+        : { backgroundColor: `color-mix(in srgb, ${design.accent} 12%, white)`, color: "var(--cv-strong)" }
     return (
       <div className="space-y-[0.5em]">
         {rows.map((row) => (
@@ -223,7 +244,7 @@ function SkillRows({ rows }) {
 
 // One body per section kind. They are only rendered for sections that have content.
 const BODIES = {
-  text: ({ content }) => <p className="whitespace-pre-line">{content.trim()}</p>,
+  text: ({ content }) => <RichText html={content} />,
 
   entries: ({ content, stacked }) =>
     content.filter(notBlank).map((item) => (
@@ -232,8 +253,7 @@ const BODIES = {
         title={item.title}
         subtitle={joinDot(item.company, item.location)}
         period={item.period}
-        bullets={item.bullets}
-        tech={item.tech}
+        description={item.description}
         stacked={stacked}
       />
     )),
@@ -252,8 +272,7 @@ const BODIES = {
             </>
           )
         }
-        bullets={item.bullets}
-        tech={item.tech}
+        description={item.description}
         stacked={stacked}
       />
     )),
@@ -265,7 +284,7 @@ const BODIES = {
         title={item.degree}
         subtitle={joinDot(item.school, item.location)}
         period={item.period}
-        bullets={item.bullets}
+        description={item.description}
         stacked={stacked}
       />
     )),
@@ -287,13 +306,13 @@ const BODIES = {
 // A section is shown when it is visible and has something to show.
 function hasContent(cv, section) {
   const content = cv.content[section.id]
-  if (section.kind === "text") return typeof content === "string" && content.trim() !== ""
+  if (section.kind === "text") return !isRichEmpty(content)
   return Array.isArray(content) && content.some(notBlank)
 }
 
 function Sections({ cv, sections, stacked = false, small = false, side = false }) {
   const { design, dark } = useCv()
-  const heading = headingProps(design, { small, dark })
+  const heading = headingProps(design, { small, dark, darkInk: darkInk(design) })
   return sections
     .filter((section) => hasContent(cv, section))
     .map((section) => {
@@ -308,12 +327,20 @@ function Sections({ cv, sections, stacked = false, small = false, side = false }
 
 const nameOf = (basics) => basics.name || "Your Name"
 
+const NAME_STYLES = {
+  bold: { name: "text-[2.4em] font-bold leading-tight", role: "mt-[0.1em] text-[1.25em] font-medium" },
+  caps: { name: "text-[1.9em] font-semibold uppercase leading-tight tracking-[0.14em]", role: "mt-[0.2em] text-[0.95em] font-medium uppercase tracking-[0.22em]" },
+  refined: { name: "text-[2.7em] font-medium leading-none tracking-tight", role: "mt-[0.35em] text-[1.2em]" },
+}
+
 function NameBlock({ basics, roleStyle, contact, className }) {
+  const { design } = useCv()
+  const look = NAME_STYLES[design.nameStyle]
   return (
     <div className={cn("min-w-0", className)}>
-      <h1 className={cn("text-[2.4em] font-bold leading-tight", T.strong)}>{nameOf(basics)}</h1>
+      <h1 className={cn(look.name, T.strong)}>{nameOf(basics)}</h1>
       {basics.role && (
-        <p className="mt-[0.1em] text-[1.25em] font-medium" style={roleStyle}>
+        <p className={look.role} style={roleStyle}>
           {basics.role}
         </p>
       )}
@@ -356,8 +383,13 @@ function Header({ cv }) {
     )
   }
 
+  // The stripe is a thick accent border on top; the optional rule adds the one below.
+  const stripe = design.headerStyle === "stripe"
   return (
-    <header className={cn("flex items-center gap-[2em]", centered ? "flex-col text-center" : "justify-between", rule.className)} style={rule.style}>
+    <header
+      className={cn("flex items-center gap-[2em]", centered ? "flex-col text-center" : "justify-between", stripe && "border-t-[0.5em] pt-[0.9em]", rule.className)}
+      style={stripe ? { borderColor: design.accent } : rule.style}
+    >
       {centered && hasPhoto && <Photo basics={basics} className="size-[28mm]" />}
       <NameBlock basics={basics} roleStyle={accentRole} contact={contact} />
       {!centered && hasPhoto && <Photo basics={basics} className="size-[28mm] shrink-0" />}
@@ -381,7 +413,8 @@ function WithSidebar({ cv }) {
   const { basics } = cv
   const visible = cv.sections.filter((s) => s.visible)
   const sideSections = visible.filter((s) => s.side)
-  const solid = design.sidebarStyle === "solid"
+  // Both "solid" (accent colour) and "dark" (fixed navy) panels are dark backgrounds with light text.
+  const dark = design.sidebarStyle === "solid" || design.sidebarStyle === "dark"
   const left = design.sidebarSide === "left"
   const hasContact = contactItems(basics).length > 0
   const hasPhoto = basics.showPhoto && basics.photo
@@ -390,12 +423,14 @@ function WithSidebar({ cv }) {
   const asideStyle =
     design.sidebarStyle === "tint"
       ? { backgroundColor: `color-mix(in srgb, ${design.accent} 9%, white)` }
-      : solid
+      : design.sidebarStyle === "solid"
         ? { backgroundColor: design.accent, ...DARK_VARS }
-        : undefined
+        : design.sidebarStyle === "dark"
+          ? { backgroundColor: DARK_PANEL, ...DARK_VARS }
+          : undefined
 
   const aside = (
-    <Ctx.Provider key="aside" value={{ ...ctx, dark: solid }}>
+    <Ctx.Provider key="aside" value={{ ...ctx, dark }}>
       <aside
         className={cn(
           design.sidebarStyle === "line"
@@ -404,10 +439,10 @@ function WithSidebar({ cv }) {
         )}
         style={{ borderColor: "var(--cv-rule)", ...asideStyle }}
       >
-        <Photo basics={basics} ring={solid} className="mx-auto mb-[0.9em] w-full max-w-[34mm]" />
+        <Photo basics={basics} ring={dark} className="mx-auto mb-[0.9em] w-full max-w-[34mm]" />
         {hasContact && (
           <section>
-            <h2 {...headingProps(design, { small: true, dark: solid })}>Contact</h2>
+            <h2 {...headingProps(design, { small: true, dark, darkInk: darkInk(design) })}>Contact</h2>
             <ContactLine basics={basics} vertical className="mt-[0.5em]" />
           </section>
         )}
@@ -455,6 +490,7 @@ export function CvDocument({ cv, links = true }) {
           "--cv-margin": `${design.margin}mm`,
           "--cv-font-size": `${design.fontSize}pt`,
           "--cv-line-height": design.lineHeight,
+          "--cv-bullet": BULLETS[design.bulletStyle],
           "--cv-section-gap": `${design.sectionGap}pt`,
           "--cv-entry-gap": `${design.entryGap}pt`,
         }}
