@@ -17,11 +17,13 @@ export const rgbToHex = (rgb) => `#${rgb.map((channel) => Math.round(channel).to
 // Numeric settings: one source for the sliders and for clamping stored values.
 export const RANGES = {
   fontSize: { label: "Font size", min: 8, max: 12, step: 0.5, unit: "pt" },
-  lineHeight: { label: "Line height", min: 1.1, max: 1.8, step: 0.05, unit: "" },
+  lineHeight: { label: "Line height", min: 1.05, max: 1.8, step: 0.05, unit: "" },
   margin: { label: "Page margin", min: 8, max: 25, step: 1, unit: "mm" },
   sectionGap: { label: "Gap between sections", min: 4, max: 24, step: 1, unit: "pt" },
   entryGap: { label: "Gap between entries", min: 2, max: 16, step: 1, unit: "pt" },
   sidebarWidth: { label: "Sidebar width", min: 45, max: 80, step: 1, unit: "mm" },
+  bulletIndent: { label: "Bullet indent", min: 0.8, max: 2.4, step: 0.05, unit: "em" },
+  bulletGap: { label: "Space between bullets", min: 0, max: 0.6, step: 0.05, unit: "em" },
 }
 
 // Choice settings: label list for the UI, and the values the normalizer accepts.
@@ -40,12 +42,35 @@ export const OPTIONS = {
     { id: "thick", label: "Thick rule" },
     { id: "pill", label: "Pill" },
     { id: "box", label: "Box" },
+    { id: "rule", label: "Accent rule" },
   ],
   headerStyle: [
     { id: "plain", label: "Plain" },
     { id: "band", label: "Banner" },
     { id: "split", label: "Split" },
     { id: "stripe", label: "Stripe" },
+    { id: "inline", label: "Inline" },
+  ],
+  entryHeader: [
+    { id: "stacked", label: "Stacked" },
+    { id: "inline", label: "Inline" },
+  ],
+  // How the organisation reads under the job title in the stacked entry header.
+  companyStyle: [
+    { id: "plain", label: "Plain" },
+    { id: "emphasis", label: "Bold italic" },
+  ],
+  contactStyle: [
+    { id: "pipes", label: "Separators" },
+    { id: "icons", label: "Icons" },
+  ],
+  inkStyle: [
+    { id: "soft", label: "Soft" },
+    { id: "black", label: "Black" },
+  ],
+  listStyle: [
+    { id: "bullets", label: "Bullets" },
+    { id: "columns", label: "Columns" },
   ],
   nameStyle: [
     { id: "bold", label: "Bold" },
@@ -68,6 +93,7 @@ export const OPTIONS = {
     { id: "lines", label: "Lines" },
     { id: "tags", label: "Tags" },
     { id: "outline", label: "Outline" },
+    { id: "columns", label: "Columns" },
   ],
   bulletStyle: [
     { id: "disc", label: "Dot" },
@@ -92,7 +118,8 @@ export const OPTIONS = {
   ],
 }
 
-// Everything a template controls. Accent colour and photo shape are personal and stay out.
+// Everything a template controls. Photo shape is personal and stays out; the accent colour does too,
+// unless a template carries its own `accent` (it is applied when the template is picked).
 const LOOK = {
   layout: "single",
   font: "inter",
@@ -108,15 +135,24 @@ const LOOK = {
   headerRule: true,
   nameStyle: "bold",
   entryStyle: "plain",
+  entryHeader: "stacked",
+  companyStyle: "plain",
+  contactStyle: "pipes",
+  inkStyle: "soft",
+  linkColor: "",
   sectionLayout: "stacked",
   skillStyle: "lines",
+  listStyle: "bullets",
   bulletStyle: "disc",
+  bulletIndent: 1.4,
+  bulletGap: 0.2,
   sidebarStyle: "tint",
   sidebarSide: "left",
   sidebarWidth: 60,
 }
 
-export const DEFAULT_DESIGN = { accent: ACCENTS[0], photoShape: "circle", ...LOOK }
+// The default design is the "Modern" template, whose company names are bold italic.
+export const DEFAULT_DESIGN = { accent: ACCENTS[0], photoShape: "circle", ...LOOK, companyStyle: "emphasis" }
 
 const look = (overrides) => ({ ...LOOK, ...overrides })
 
@@ -127,12 +163,38 @@ const look = (overrides) => ({ ...LOOK, ...overrides })
 // (one column is the safest). Each one is just a bundle of the options above.
 export const TEMPLATES = [
   {
+    id: "signature",
+    name: "Signature",
+    hint: "Compact one-pager: navy name with the job title beside it, icon contact row, ruled headings, 4-column skills.",
+    accent: "#033753",
+    preset: look({
+      font: "source-sans-3",
+      fontSize: 9.25,
+      lineHeight: 1.08,
+      margin: 10,
+      sectionGap: 8.25,
+      entryGap: 5,
+      headerStyle: "inline",
+      headerRule: false,
+      contactStyle: "icons",
+      linkColor: "#0939aa",
+      headingStyle: "rule",
+      uppercase: true,
+      entryHeader: "inline",
+      skillStyle: "columns",
+      listStyle: "columns",
+      bulletIndent: 0.85,
+      bulletGap: 0,
+      inkStyle: "black",
+    }),
+  },
+  {
     id: "classic",
     name: "Classic",
     hint: "Serif, centered header, ruled headings.",
     preset: look({ font: "georgia", headingStyle: "line", headerAlign: "center", headerRule: false }),
   },
-  { id: "modern", name: "Modern", hint: "Clean sans-serif with accent headings.", preset: look({}) },
+  { id: "modern", name: "Modern", hint: "Clean sans-serif with accent headings.", preset: look({ companyStyle: "emphasis" }) },
   {
     id: "compact",
     name: "Compact",
@@ -447,11 +509,18 @@ export function normalizeDesign(raw) {
   const d = DEFAULT_DESIGN
   const design = {
     accent: isHex(src.accent) ? src.accent : d.accent,
+    linkColor: isHex(src.linkColor) ? src.linkColor : "",
     font: normalizeFontId(src.font, d.font),
     uppercase: typeof src.uppercase === "boolean" ? src.uppercase : d.uppercase,
     headerRule: typeof src.headerRule === "boolean" ? src.headerRule : d.headerRule,
   }
   for (const key of Object.keys(OPTIONS)) design[key] = pick(src[key], ids(key), d[key])
   for (const [key, range] of Object.entries(RANGES)) design[key] = clamp(src[key], range, d[key])
+  // A design saved before this setting existed keeps its plain look, except the default template,
+  // which takes the new bold italic company names.
+  if (!ids("companyStyle").includes(src.companyStyle)) {
+    const modern = TEMPLATES.find((template) => template.id === "modern").preset
+    design.companyStyle = isPresetActive({ ...design, companyStyle: modern.companyStyle }, modern) ? modern.companyStyle : "plain"
+  }
   return design
 }

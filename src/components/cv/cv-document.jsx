@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, Fragment, useContext, useEffect, useMemo } from "react"
+import { Link2, Mail, MapPin, Phone } from "lucide-react"
 import { fontStack, googleFamily, loadGoogleFont } from "@/lib/cv-fonts"
 import { isRichEmpty, sanitizeRich } from "@/lib/cv-rich"
 import { stripProtocol, toHref } from "@/lib/cv-url"
@@ -35,6 +36,9 @@ const DARK_VARS = {
 const DARK_PANEL = "#1b2638"
 const darkInk = ({ sidebarStyle, accent }) => (sidebarStyle === "dark" ? `color-mix(in srgb, ${accent} 40%, white)` : "#fff")
 
+// "Black" ink for templates whose text is pure black (the default is a softer near-black).
+const BLACK_INK = { "--cv-text": "#000", "--cv-strong": "#000", "--cv-soft": "#000", "--cv-muted": "#000", "--cv-faint": "#000" }
+
 const BULLETS = { disc: "disc", square: "square", dash: '"–  "', arrow: '"›  "' }
 const PHOTO_SHAPE = { circle: "rounded-full", rounded: "rounded-[0.9em]", square: "rounded-none" }
 
@@ -67,20 +71,37 @@ function joinDot(...parts) {
   })
 }
 
+// The organisation in a stacked entry header: bold italic in templates that ask for it.
+function Company({ name }) {
+  const { design } = useCv()
+  return design.companyStyle === "emphasis" ? <span className={cn("font-bold italic", T.strong)}>{name}</span> : name
+}
+
+// "09/2025 – Present | Ho Chi Minh City": a literal bar between short details, empty ones skipped.
+const bar = (...parts) => parts.filter(Boolean).join(" | ")
+
 function contactItems(basics) {
   return [
-    basics.email && { text: basics.email, href: `mailto:${basics.email.trim()}` },
-    basics.phone && { text: basics.phone, href: `tel:${basics.phone.replace(/[^\d+]/g, "")}` },
-    basics.location && { text: basics.location },
-    basics.website && { text: stripProtocol(basics.website), href: toHref(basics.website) },
-    basics.linkedin && { text: stripProtocol(basics.linkedin), href: toHref(basics.linkedin) },
-    basics.github && { text: stripProtocol(basics.github), href: toHref(basics.github) },
+    basics.email && { type: "email", text: basics.email, href: `mailto:${basics.email.trim()}` },
+    basics.phone && { type: "phone", text: basics.phone, href: `tel:${basics.phone.replace(/[^\d+]/g, "")}` },
+    basics.location && { type: "location", text: basics.location },
+    basics.website && { type: "website", text: stripProtocol(basics.website), href: toHref(basics.website) },
+    basics.linkedin && { type: "linkedin", text: stripProtocol(basics.linkedin), href: toHref(basics.linkedin) },
+    basics.github && { type: "github", text: stripProtocol(basics.github), href: toHref(basics.github) },
   ].filter(Boolean)
 }
 
-function Anchor({ href, children }) {
-  const { links } = useCv()
-  return href && links ? <a href={href}>{children}</a> : children
+const CONTACT_ICONS = { email: Mail, phone: Phone, location: MapPin, website: Link2, linkedin: Link2, github: Link2 }
+
+// `colored` is for the contact line: templates can give those links their own colour (not on a dark panel).
+function Anchor({ href, colored, children }) {
+  const { links, design, dark } = useCv()
+  if (!href || !links) return children
+  return (
+    <a href={href} style={colored && design.linkColor && !dark ? { color: design.linkColor } : undefined}>
+      {children}
+    </a>
+  )
 }
 
 function Photo({ basics, className, ring }) {
@@ -91,18 +112,45 @@ function Photo({ basics, className, ring }) {
 }
 
 function ContactLine({ basics, vertical, className }) {
+  const { design } = useCv()
   const items = contactItems(basics)
   if (!items.length) return null
+  const icons = design.contactStyle === "icons"
+  const icon = (item) => {
+    const Icon = CONTACT_ICONS[item.type]
+    return <Icon aria-hidden className="size-[1.05em] shrink-0 text-[color:var(--cv-strong)]" strokeWidth={2.2} />
+  }
 
   if (vertical) {
     return (
       <ul className={cn("space-y-[0.3em] text-[0.95em]", T.soft, className)}>
         {items.map((item) => (
-          <li key={item.text} className="[overflow-wrap:anywhere]">
-            <Anchor href={item.href}>{item.text}</Anchor>
+          <li key={item.text} className={cn(icons && "flex items-start gap-[0.5em]")}>
+            {icons && <span className="mt-[0.15em]">{icon(item)}</span>}
+            <span className="[overflow-wrap:anywhere]">
+              <Anchor href={item.href} colored>
+                {item.text}
+              </Anchor>
+            </span>
           </li>
         ))}
       </ul>
+    )
+  }
+
+  // With icons: one flex row, no separators. Every item is atomic, so a long line wraps between items.
+  if (icons) {
+    return (
+      <p className={cn("flex flex-wrap items-center gap-x-[1.5em] gap-y-[0.2em] text-[0.95em]", design.headerAlign === "center" && "justify-center", T.soft, className)}>
+        {items.map((item) => (
+          <span key={item.text} className="inline-flex items-center gap-[0.5em]">
+            {icon(item)}
+            <Anchor href={item.href} colored>
+              {item.text}
+            </Anchor>
+          </span>
+        ))}
+      </p>
     )
   }
 
@@ -113,7 +161,9 @@ function ContactLine({ basics, vertical, className }) {
     <p className={cn("text-[0.95em]", T.soft, className)}>
       {items.map((item, index) => (
         <span key={item.text} className="inline-block">
-          <Anchor href={item.href}>{item.text}</Anchor>
+          <Anchor href={item.href} colored>
+            {item.text}
+          </Anchor>
           {index < items.length - 1 && <span className={cn("px-[0.5em]", T.faint)}>|</span>}
         </span>
       ))}
@@ -136,6 +186,12 @@ function headingProps({ headingStyle, uppercase, accent }, { small = false, dark
   const ink = dark ? darkInk : accent
   const strong = dark ? "#fff" : "var(--cv-strong)"
   switch (headingStyle) {
+    case "rule":
+      // Bold black title over a thin rule in the accent colour; no letter-spacing.
+      return {
+        className: cn("break-after-avoid border-b pb-[0.1em] font-bold", small ? "text-[1em]" : "text-[1.135em]", uppercase && "uppercase"),
+        style: { color: strong, borderColor: ink },
+      }
     case "thick":
       return { className: cn(base, "border-b-[0.2em] pb-[0.2em]"), style: { color: strong, borderColor: ink } }
     case "pill":
@@ -185,14 +241,18 @@ function Section({ title, heading, side, children }) {
       <h2 className={heading.className} style={heading.style}>
         {title}
       </h2>
-      <div className={cn("mt-[0.5em]", gap)}>{children}</div>
+      <div className={cn(design.headingStyle === "rule" ? "mt-[0.35em]" : "mt-[0.5em]", gap)}>{children}</div>
     </section>
   )
 }
 
-function Entry({ title, subtitle, period, description, stacked }) {
+// `inline` ({ bold, italic, side }) is the one-line header some templates use: "ACME, Job title" on the
+// left (bold, then italic) and the dates and place on the right. The stacked header (title, then
+// subtitle, with the period beside the title) is used otherwise, and always in a narrow column.
+function Entry({ title, subtitle, period, inline, description, stacked }) {
   const { design } = useCv()
   const timeline = design.entryStyle === "timeline" && !stacked
+  const oneLine = design.entryHeader === "inline" && !stacked && inline
   const periodLine = period && <p className={cn("whitespace-nowrap text-[0.95em]", T.muted)}>{period}</p>
   return (
     <div
@@ -208,20 +268,58 @@ function Entry({ title, subtitle, period, description, stacked }) {
       )}
       {/* The title block never ends a page on its own; each list item is kept whole, so a long entry can still flow onto the next page. */}
       <div className="break-after-avoid">
-        <div className="flex items-baseline justify-between gap-[1em]">
-          {title && <h3 className={cn("min-w-0 text-[1.1em] font-semibold", T.strong)}>{title}</h3>}
-          {!stacked && periodLine}
-        </div>
-        {subtitle && <p className={T.soft}>{subtitle}</p>}
-        {stacked && periodLine}
+        {oneLine ? (
+          <div className="flex items-baseline justify-between gap-[1em]">
+            <h3 className={cn("min-w-0 font-bold", T.strong)}>
+              {inline.bold}
+              {inline.italic && (
+                <>
+                  , <span className="font-normal italic">{inline.italic}</span>
+                </>
+              )}
+            </h3>
+            {inline.side && <p className={cn("shrink-0 whitespace-nowrap", T.muted)}>{inline.side}</p>}
+          </div>
+        ) : (
+          <>
+            <div className="flex items-baseline justify-between gap-[1em]">
+              {title && <h3 className={cn("min-w-0 text-[1.1em] font-semibold", T.strong)}>{title}</h3>}
+              {!stacked && periodLine}
+            </div>
+            {subtitle && <p className={T.soft}>{subtitle}</p>}
+            {stacked && periodLine}
+          </>
+        )}
       </div>
-      <RichText html={description} className="mt-[0.3em]" />
+      <RichText html={description} className="mt-[calc(var(--cv-li-gap,0.2em)*1.5)]" />
     </div>
   )
 }
 
-function SkillRows({ rows }) {
+// A row of 1-4 equal columns, used for skills and for certificates-style lists.
+function Columns({ count, children }) {
+  return (
+    <div className="grid gap-x-[2em] gap-y-[0.5em]" style={{ gridTemplateColumns: `repeat(${Math.min(Math.max(count, 1), 4)}, minmax(0, 1fr))` }}>
+      {children}
+    </div>
+  )
+}
+
+function SkillRows({ rows, stacked }) {
   const { design, dark } = useCv()
+
+  if (design.skillStyle === "columns" && !stacked) {
+    return (
+      <Columns count={rows.length}>
+        {rows.map((row) => (
+          <div key={row.id} className="min-w-0">
+            {row.title && <p className={cn("font-bold", T.strong)}>{row.title}</p>}
+            <p>{row.items}</p>
+          </div>
+        ))}
+      </Columns>
+    )
+  }
 
   if (design.skillStyle === "tags" || design.skillStyle === "outline") {
     const outline = design.skillStyle === "outline"
@@ -271,8 +369,9 @@ const BODIES = {
       <Entry
         key={item.id}
         title={item.title}
-        subtitle={joinDot(item.company, item.location)}
+        subtitle={joinDot(item.company && <Company name={item.company} />, item.location)}
         period={item.period}
+        inline={{ bold: item.company || item.title, italic: item.company ? item.title : "", side: bar(item.period, item.location) }}
         description={item.description}
         stacked={stacked}
       />
@@ -284,6 +383,7 @@ const BODIES = {
         key={item.id}
         title={item.name}
         subtitle={joinDot(item.role, item.link && <Anchor href={toHref(item.link)}>{stripProtocol(item.link)}</Anchor>)}
+        inline={{ bold: item.name, italic: item.role, side: item.link && <Anchor href={toHref(item.link)}>{stripProtocol(item.link)}</Anchor> }}
         description={item.description}
         stacked={stacked}
       />
@@ -296,28 +396,45 @@ const BODIES = {
         title={item.degree}
         subtitle={joinDot(item.school, item.location)}
         period={item.period}
+        inline={{ bold: item.degree, italic: item.school, side: bar(item.period, item.location) }}
         description={item.description}
         stacked={stacked}
       />
     )),
 
-  skills: ({ content }) => <SkillRows rows={content.filter(notBlank)} />,
+  skills: ({ content, stacked }) => <SkillRows rows={content.filter(notBlank)} stacked={stacked} />,
 
-  list: ({ content }) => (
-    <ul className="space-y-[0.2em] pl-[1.4em] marker:text-[color:var(--cv-faint)]" style={{ listStyleType: "disc" }}>
-      {content.filter(notBlank).map((item) => (
-        <li key={item.id}>
-          {item.title}
-          {/* The detail moves to the next line as a whole instead of being split ("Amazon Web / Services"). */}
-          {item.detail && (
-            <>
-              <span className={cn("whitespace-nowrap", T.muted)}> —</span> <span className={cn("inline-block", T.muted)}>{item.detail}</span>
-            </>
-          )}
-        </li>
-      ))}
-    </ul>
-  ),
+  list: function ListBody({ content, stacked }) {
+    const { design } = useCv()
+    const items = content.filter(notBlank)
+    if (design.listStyle === "columns" && !stacked) {
+      return (
+        <Columns count={items.length}>
+          {items.map((item) => (
+            <div key={item.id} className="min-w-0">
+              <p className={cn("font-bold", T.strong)}>{item.title}</p>
+              {item.detail && <p>{item.detail}</p>}
+            </div>
+          ))}
+        </Columns>
+      )
+    }
+    return (
+      <ul className="space-y-[0.2em] pl-[1.4em] marker:text-[color:var(--cv-faint)]" style={{ listStyleType: "disc" }}>
+        {items.map((item) => (
+          <li key={item.id}>
+            {item.title}
+            {/* The detail moves to the next line as a whole instead of being split ("Amazon Web / Services"). */}
+            {item.detail && (
+              <>
+                <span className={cn("whitespace-nowrap", T.muted)}> —</span> <span className={cn("inline-block", T.muted)}>{item.detail}</span>
+              </>
+            )}
+          </li>
+        ))}
+      </ul>
+    )
+  },
 }
 
 // A section is shown when it is visible and has something to show.
@@ -396,6 +513,28 @@ function Header({ cv }) {
           <NameBlock basics={basics} roleStyle={accentRole} />
         </div>
         <ContactLine basics={basics} vertical className="shrink-0 text-right" />
+      </header>
+    )
+  }
+
+  // Name and job title on one baseline, both in the accent colour, with the contact line below.
+  if (design.headerStyle === "inline") {
+    return (
+      <header className={cn("flex items-center justify-between gap-[2em] pb-[0.25em]", rule.className)} style={rule.style}>
+        <div className="min-w-0">
+          <div className={cn("flex flex-wrap items-baseline gap-x-[0.45em]", centered && "justify-center text-center")}>
+            <h1 className="text-[2.32em] font-bold leading-[1.15]" style={accentRole}>
+              {nameOf(basics)}
+            </h1>
+            {basics.role && (
+              <p className="text-[1.675em] italic leading-[1.15]" style={accentRole}>
+                {basics.role}
+              </p>
+            )}
+          </div>
+          {contact}
+        </div>
+        {hasPhoto && <Photo basics={basics} className="size-[26mm] shrink-0" />}
       </header>
     )
   }
@@ -508,6 +647,9 @@ export function CvDocument({ cv, links = true }) {
           "--cv-font-size": `${design.fontSize}pt`,
           "--cv-line-height": design.lineHeight,
           "--cv-bullet": BULLETS[design.bulletStyle],
+          "--cv-indent": `${design.bulletIndent}em`,
+          "--cv-li-gap": `${design.bulletGap}em`,
+          ...(design.inkStyle === "black" ? BLACK_INK : {}),
           "--cv-section-gap": `${design.sectionGap}pt`,
           "--cv-entry-gap": `${design.entryGap}pt`,
         }}

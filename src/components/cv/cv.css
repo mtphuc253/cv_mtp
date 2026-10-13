@@ -1,8 +1,8 @@
 /*
   The CV sheet is always white paper, whatever the app theme is. On screen it is a
-  210mm-wide sheet whose padding is the page margin; when printing, that padding is
-  dropped and the same value becomes the @page margin (set from cv-builder.jsx, since
-  @page cannot read CSS variables), so every page gets identical margins.
+  210mm-wide sheet whose padding is the page margin. When printing, the @page margin is 0
+  (so the browser has no room for its own header and footer) and the sheet keeps its padding,
+  which box-decoration-break: clone repeats at the top and bottom of every page.
 */
 .cv-paper {
   /* Text colours. A section on a dark background (solid sidebar, banner) redefines them. */
@@ -39,14 +39,15 @@
   margin: 0;
 }
 
+/* Spacing follows --cv-li-gap (the "Space between bullets" setting, 0.2em by default). */
 .cv-rich p + p {
-  margin-top: 0.35em;
+  margin-top: calc(var(--cv-li-gap, 0.2em) * 1.75);
 }
 
 .cv-rich ul,
 .cv-rich ol {
-  margin: 0.3em 0 0;
-  padding-left: 1.4em;
+  margin: calc(var(--cv-li-gap, 0.2em) * 1.5) 0 0;
+  padding-left: var(--cv-indent, 1.4em);
 }
 
 .cv-rich ul {
@@ -58,7 +59,7 @@
 }
 
 .cv-rich li {
-  margin-top: 0.2em;
+  margin-top: var(--cv-li-gap, 0.2em);
   break-inside: avoid;
 }
 
@@ -75,6 +76,13 @@
   text-underline-offset: 0.15em;
 }
 
+/* The hidden box that works out the page breaks (lib/cv-pages.js): the sheet as it prints, without its margin. */
+.cv-measure .cv-paper {
+  width: auto;
+  min-height: 0;
+  padding: 0;
+}
+
 @media print {
   html,
   body {
@@ -84,7 +92,8 @@
   .cv-print .cv-paper {
     width: auto;
     min-height: 0;
-    padding: 0;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
   }
 }
 

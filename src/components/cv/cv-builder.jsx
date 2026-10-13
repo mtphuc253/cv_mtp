@@ -6,6 +6,7 @@ import { Check, CopyPlus, Download, Eye, FileText, FolderOpen, PencilLine } from
 import { CvDocument } from "@/components/cv/cv-document"
 import { CvEditor } from "@/components/cv/cv-editor"
 import { CvLibrary } from "@/components/cv/cv-library"
+import { CvPreview } from "@/components/cv/cv-preview"
 import { blankCv, emptyContent, normalizeCv, sampleCv } from "@/lib/cv-data"
 import { ensureFont } from "@/lib/cv-fonts"
 import {
@@ -23,7 +24,7 @@ import {
 import { cn } from "@/lib/utils"
 import "./cv.css"
 
-// 210mm at 96dpi. The preview is zoomed down from this to fit its column.
+// 210mm at 96dpi. The preview is scaled down from this to fit its column.
 const PAPER_PX = 794
 
 export function CvBuilder() {
@@ -34,6 +35,7 @@ export function CvBuilder() {
   const [ready, setReady] = useState(false)
   const [view, setView] = useState("edit")
   const [scale, setScale] = useState(0.7)
+  const [pageCount, setPageCount] = useState(1)
   const [notice, setNotice] = useState("")
   const [libraryOpen, setLibraryOpen] = useState(false)
   const [printRequest, setPrintRequest] = useState(0)
@@ -231,7 +233,7 @@ export function CvBuilder() {
           </button>
           <p aria-live="polite" className="hidden min-w-0 items-center gap-1.5 truncate text-xs text-muted-foreground lg:flex">
             <Check className="size-3.5 shrink-0" />
-            <span className="truncate">{notice || `Editing “${active.name}” · autosaved`}</span>
+            <span className="truncate">{notice || `Editing “${active.name}” · autosaved · ${pageCount} page${pageCount > 1 ? "s" : ""}`}</span>
           </p>
 
           <div className="ml-auto flex items-center gap-2">
@@ -285,7 +287,7 @@ export function CvBuilder() {
               onOpenLibrary={() => setLibraryOpen(true)}
             />
             <p className="px-1 pt-4 text-[11px] leading-relaxed text-muted-foreground">
-              Tip: in the print dialog choose &ldquo;Save as PDF&rdquo; and turn off &ldquo;Headers and footers&rdquo;.
+              Tip: in the print dialog choose &ldquo;Save as PDF&rdquo;. The dashed lines in the preview show where the pages break.
             </p>
           </motion.aside>
 
@@ -293,9 +295,7 @@ export function CvBuilder() {
             ref={previewRef}
             className={cn("min-h-0 min-w-0 flex-1 overflow-auto bg-[var(--cv-canvas)] p-4 sm:p-6", view === "preview" ? "block" : "hidden", "lg:block")}
           >
-            <div className="mx-auto shadow-[0_12px_40px_-12px_rgba(30,50,110,0.35),0_0_0_1px_rgba(23,33,58,0.05)]" style={{ width: "210mm", zoom: scale }}>
-              <CvDocument cv={cv} />
-            </div>
+            <CvPreview cv={cv} scale={scale} onPageCount={setPageCount} />
           </main>
         </div>
 
@@ -304,8 +304,9 @@ export function CvBuilder() {
 
       {/* Printing uses its own copy: the screen layout scrolls and is scaled, which would clip pages. */}
       <div className="cv-print hidden print:block">
-        {/* @page can't use CSS variables, so the margin is injected here. */}
-        <style>{`@page { size: A4; margin: ${cv.design.margin}mm; }`}</style>
+        {/* A zero page margin is what stops the browser from printing its own header and footer (date,
+            title, address, page number). The CV's margin is padding on the sheet that repeats on every page, see cv.css. */}
+        <style>{`@page { size: A4; margin: 0; }`}</style>
         <CvDocument cv={cv} />
       </div>
     </>

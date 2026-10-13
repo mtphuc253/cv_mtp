@@ -13,11 +13,14 @@ import { FONT_GROUPS, customFamily, customFontId, isCustomFontId, loadGoogleFont
 import { SECTION_PRESETS } from "@/lib/cv-sections"
 import { cn } from "@/lib/utils"
 
+// A template is its preset plus, for some, its own accent colour.
+const withTemplate = (design, template) => ({ ...design, ...template.preset, ...(template.accent && { accent: template.accent }) })
+
 // Template thumbnails are the real document, shrunk (210mm x 297mm at this zoom).
 const THUMB_ZOOM = 0.14
 
 function TemplateCard({ template, cv, active, onPick }) {
-  const thumb = { ...cv, design: { ...cv.design, ...template.preset } }
+  const thumb = { ...cv, design: withTemplate(cv.design, template) }
   const single = template.preset.layout === "single"
   return (
     <button
@@ -57,7 +60,7 @@ function TemplatePicker({ cv, setCv }) {
             template={template}
             cv={deferred}
             active={isPresetActive(cv.design, template.preset)}
-            onPick={() => setCv((c) => ({ ...c, design: { ...c.design, ...template.preset } }))}
+            onPick={() => setCv((c) => ({ ...c, design: withTemplate(c.design, template) }))}
           />
         ))}
       </div>
@@ -233,6 +236,28 @@ export function AddSection({ onAdd }) {
   )
 }
 
+// Contact links (email, phone, website...) can have their own colour; off means the text colour.
+function LinkColor({ value, onChange }) {
+  const on = Boolean(value)
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <label className="flex cursor-pointer items-center gap-2 text-sm">
+        <input type="checkbox" checked={on} onChange={(event) => onChange(event.target.checked ? "#0939aa" : "")} className="size-4 accent-brand" />
+        Colour the contact links
+      </label>
+      {on && (
+        <input
+          type="color"
+          aria-label="Contact link colour"
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className="h-8 w-12 cursor-pointer rounded-md border border-input bg-card p-0.5"
+        />
+      )}
+    </div>
+  )
+}
+
 // Everything that changes how the CV looks, as opposed to what it says (plus the section list).
 export function CvDesignPanels({ cv, setCv, onAddSection, onDeleteSection }) {
   const { design, sections } = cv
@@ -266,6 +291,8 @@ export function CvDesignPanels({ cv, setCv, onAddSection, onDeleteSection }) {
 
       <Panel title="Color & typography">
         <CvColorPicker value={design.accent} onChange={(accent) => setDesign({ accent })} />
+        <LinkColor value={design.linkColor} onChange={(linkColor) => setDesign({ linkColor })} />
+        {choice("inkStyle", "Text colour")}
         {/* Keyed by font so its draft state follows template picks and CV switches. */}
         <FontPicker key={design.font} value={design.font} onChange={(font) => setDesign({ font })} />
         {slider("fontSize")}
@@ -274,7 +301,10 @@ export function CvDesignPanels({ cv, setCv, onAddSection, onDeleteSection }) {
         {choice("headingStyle", "Section headings", 3)}
         <Toggle label="Uppercase headings" checked={design.uppercase} onChange={(uppercase) => setDesign({ uppercase })} />
         {choice("bulletStyle", "Bullets", 4)}
-        {choice("skillStyle", "Skills")}
+        {slider("bulletIndent")}
+        {slider("bulletGap")}
+        {choice("skillStyle", "Skills", 4)}
+        {choice("listStyle", "Certificates & lists")}
       </Panel>
 
       <Panel title="Layout & spacing">
@@ -293,6 +323,9 @@ export function CvDesignPanels({ cv, setCv, onAddSection, onDeleteSection }) {
             {slider("sidebarWidth")}
           </>
         )}
+        {choice("contactStyle", "Contact line")}
+        {choice("entryHeader", "Entry header")}
+        {choice("companyStyle", "Company name")}
         {choice("entryStyle", "Entries")}
         {choice("photoShape", "Photo shape")}
         {slider("margin")}
