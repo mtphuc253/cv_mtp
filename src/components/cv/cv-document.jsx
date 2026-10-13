@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useEffect, useMemo } from "react"
+import { createContext, Fragment, useContext, useEffect, useMemo } from "react"
 import { fontStack, googleFamily, loadGoogleFont } from "@/lib/cv-fonts"
 import { isRichEmpty, sanitizeRich } from "@/lib/cv-rich"
 import { stripProtocol, toHref } from "@/lib/cv-url"
@@ -47,7 +47,25 @@ const tags = (text) =>
 const notBlank = (item) =>
   Object.entries(item).some(([key, value]) => key !== "id" && (key === "description" ? !isRichEmpty(value) : String(value).trim()))
 
-const joinDot = (...parts) => parts.filter(Boolean).join(" · ")
+// Short details joined with a dot ("Acme Corp · Ho Chi Minh City"). Each one is an inline-block, so
+// a line breaks between details and never in the middle of one (e.g. inside "Ho Chi Minh City"),
+// unless a single detail is wider than the column. The dot stays with the detail before it.
+function joinDot(...parts) {
+  const list = parts.filter(Boolean)
+  if (!list.length) return null
+  return list.map((part, index) => {
+    const last = index === list.length - 1
+    return (
+      <Fragment key={index}>
+        <span className="inline-block">
+          {part}
+          {!last && <span className="whitespace-nowrap"> ·</span>}
+        </span>
+        {!last && " "}
+      </Fragment>
+    )
+  })
+}
 
 function contactItems(basics) {
   return [
@@ -88,13 +106,15 @@ function ContactLine({ basics, vertical, className }) {
     )
   }
 
-  // Inline items with literal separators, so extracted text never fuses two items together.
+  // Inline items with literal separators, so extracted text never fuses two items together. Each
+  // item is an inline-block carrying the separator after it: a long line wraps between items
+  // (after a "|"), never inside one such as "linkedin.com/in/alex-nguyen".
   return (
     <p className={cn("text-[0.95em]", T.soft, className)}>
       {items.map((item, index) => (
-        <span key={item.text}>
-          {index > 0 && <span className={cn("px-[0.5em]", T.faint)}>|</span>}
+        <span key={item.text} className="inline-block">
           <Anchor href={item.href}>{item.text}</Anchor>
+          {index < items.length - 1 && <span className={cn("px-[0.5em]", T.faint)}>|</span>}
         </span>
       ))}
     </p>
@@ -263,15 +283,7 @@ const BODIES = {
       <Entry
         key={item.id}
         title={item.name}
-        subtitle={
-          (item.role || item.link) && (
-            <>
-              {item.role}
-              {item.role && item.link && " · "}
-              {item.link && <Anchor href={toHref(item.link)}>{stripProtocol(item.link)}</Anchor>}
-            </>
-          )
-        }
+        subtitle={joinDot(item.role, item.link && <Anchor href={toHref(item.link)}>{stripProtocol(item.link)}</Anchor>)}
         description={item.description}
         stacked={stacked}
       />
@@ -296,7 +308,12 @@ const BODIES = {
       {content.filter(notBlank).map((item) => (
         <li key={item.id}>
           {item.title}
-          {item.detail && <span className={T.muted}> — {item.detail}</span>}
+          {/* The detail moves to the next line as a whole instead of being split ("Amazon Web / Services"). */}
+          {item.detail && (
+            <>
+              <span className={cn("whitespace-nowrap", T.muted)}> —</span> <span className={cn("inline-block", T.muted)}>{item.detail}</span>
+            </>
+          )}
         </li>
       ))}
     </ul>
