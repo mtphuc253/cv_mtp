@@ -23,6 +23,9 @@ const T = {
   faint: "text-[color:var(--cv-faint)]",
 }
 
+// The job title and the company name under it are one weight, so they cannot drift apart.
+const ENTRY_TITLE_WEIGHT = "font-semibold"
+
 const DARK_VARS = {
   color: "#fff",
   "--cv-text": "#fff",
@@ -71,10 +74,9 @@ function joinDot(...parts) {
   })
 }
 
-// The organisation in a stacked entry header: bold italic in templates that ask for it.
+// Company names are always black and italic, in every template, in the weight of the job title.
 function Company({ name }) {
-  const { design } = useCv()
-  return design.companyStyle === "emphasis" ? <span className={cn("font-bold italic", T.strong)}>{name}</span> : name
+  return <span className={cn("italic", ENTRY_TITLE_WEIGHT, T.strong)}>{name}</span>
 }
 
 // "09/2025 – Present | Ho Chi Minh City": a literal bar between short details, empty ones skipped.
@@ -253,6 +255,9 @@ function Entry({ title, subtitle, period, inline, description, stacked }) {
   const { design } = useCv()
   const timeline = design.entryStyle === "timeline" && !stacked
   const oneLine = design.entryHeader === "inline" && !stacked && inline
+  const caps = design.entryUppercase && "uppercase"
+  // Job title and company name share one size: a set number of pixels bigger than the text.
+  const size = design.entryBoost > 0 ? { fontSize: `calc(1em + ${design.entryBoost}px)` } : undefined
   const periodLine = period && <p className={cn("whitespace-nowrap text-[0.95em]", T.muted)}>{period}</p>
   return (
     <div
@@ -270,11 +275,11 @@ function Entry({ title, subtitle, period, inline, description, stacked }) {
       <div className="break-after-avoid">
         {oneLine ? (
           <div className="flex items-baseline justify-between gap-[1em]">
-            <h3 className={cn("min-w-0 font-bold", T.strong)}>
-              {inline.bold}
+            <h3 className={cn("min-w-0 font-bold leading-[1.25]", !size && "text-[1.2em]", caps, T.strong)} style={size}>
+              {inline.company ? <span className="italic">{inline.bold}</span> : inline.bold}
               {inline.italic && (
                 <>
-                  , <span className="font-normal italic">{inline.italic}</span>
+                  , <span className="font-normal normal-case italic">{inline.italic}</span>
                 </>
               )}
             </h3>
@@ -283,10 +288,18 @@ function Entry({ title, subtitle, period, inline, description, stacked }) {
         ) : (
           <>
             <div className="flex items-baseline justify-between gap-[1em]">
-              {title && <h3 className={cn("min-w-0 text-[1.1em] font-semibold", T.strong)}>{title}</h3>}
+              {title && (
+                <h3 className={cn("min-w-0 leading-[1.25]", ENTRY_TITLE_WEIGHT, !size && "text-[1.25em]", caps, T.strong)} style={size}>
+                  {title}
+                </h3>
+              )}
               {!stacked && periodLine}
             </div>
-            {subtitle && <p className={T.soft}>{subtitle}</p>}
+            {subtitle && (
+              <p className={cn(T.soft, "leading-[1.25]", !size && "text-[1.25em]")} style={size}>
+                {subtitle}
+              </p>
+            )}
             {stacked && periodLine}
           </>
         )}
@@ -371,7 +384,7 @@ const BODIES = {
         title={item.title}
         subtitle={joinDot(item.company && <Company name={item.company} />, item.location)}
         period={item.period}
-        inline={{ bold: item.company || item.title, italic: item.company ? item.title : "", side: bar(item.period, item.location) }}
+        inline={{ bold: item.company || item.title, company: Boolean(item.company), italic: item.company ? item.title : "", side: bar(item.period, item.location) }}
         description={item.description}
         stacked={stacked}
       />

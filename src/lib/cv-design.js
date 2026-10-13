@@ -24,6 +24,8 @@ export const RANGES = {
   sidebarWidth: { label: "Sidebar width", min: 45, max: 80, step: 1, unit: "mm" },
   bulletIndent: { label: "Bullet indent", min: 0.8, max: 2.4, step: 0.05, unit: "em" },
   bulletGap: { label: "Space between bullets", min: 0, max: 0.6, step: 0.05, unit: "em" },
+  // How much bigger than the text the job title and organisation are in an entry header (0 gives the classic size).
+  entryBoost: { label: "Title & company: bigger than text by", min: 0, max: 8, step: 0.5, unit: "px" },
 }
 
 // Choice settings: label list for the UI, and the values the normalizer accepts.
@@ -54,11 +56,6 @@ export const OPTIONS = {
   entryHeader: [
     { id: "stacked", label: "Stacked" },
     { id: "inline", label: "Inline" },
-  ],
-  // How the organisation reads under the job title in the stacked entry header.
-  companyStyle: [
-    { id: "plain", label: "Plain" },
-    { id: "emphasis", label: "Bold italic" },
   ],
   contactStyle: [
     { id: "pipes", label: "Separators" },
@@ -136,7 +133,7 @@ const LOOK = {
   nameStyle: "bold",
   entryStyle: "plain",
   entryHeader: "stacked",
-  companyStyle: "plain",
+  entryBoost: 4,
   contactStyle: "pipes",
   inkStyle: "soft",
   linkColor: "",
@@ -151,8 +148,7 @@ const LOOK = {
   sidebarWidth: 60,
 }
 
-// The default design is the "Modern" template, whose company names are bold italic.
-export const DEFAULT_DESIGN = { accent: ACCENTS[0], photoShape: "circle", ...LOOK, companyStyle: "emphasis" }
+export const DEFAULT_DESIGN = { accent: ACCENTS[0], photoShape: "circle", entryUppercase: false, ...LOOK }
 
 const look = (overrides) => ({ ...LOOK, ...overrides })
 
@@ -194,7 +190,7 @@ export const TEMPLATES = [
     hint: "Serif, centered header, ruled headings.",
     preset: look({ font: "georgia", headingStyle: "line", headerAlign: "center", headerRule: false }),
   },
-  { id: "modern", name: "Modern", hint: "Clean sans-serif with accent headings.", preset: look({ companyStyle: "emphasis" }) },
+  { id: "modern", name: "Modern", hint: "Clean sans-serif with accent headings.", preset: look({}) },
   {
     id: "compact",
     name: "Compact",
@@ -512,15 +508,10 @@ export function normalizeDesign(raw) {
     linkColor: isHex(src.linkColor) ? src.linkColor : "",
     font: normalizeFontId(src.font, d.font),
     uppercase: typeof src.uppercase === "boolean" ? src.uppercase : d.uppercase,
+    entryUppercase: typeof src.entryUppercase === "boolean" ? src.entryUppercase : d.entryUppercase,
     headerRule: typeof src.headerRule === "boolean" ? src.headerRule : d.headerRule,
   }
   for (const key of Object.keys(OPTIONS)) design[key] = pick(src[key], ids(key), d[key])
   for (const [key, range] of Object.entries(RANGES)) design[key] = clamp(src[key], range, d[key])
-  // A design saved before this setting existed keeps its plain look, except the default template,
-  // which takes the new bold italic company names.
-  if (!ids("companyStyle").includes(src.companyStyle)) {
-    const modern = TEMPLATES.find((template) => template.id === "modern").preset
-    design.companyStyle = isPresetActive({ ...design, companyStyle: modern.companyStyle }, modern) ? modern.companyStyle : "plain"
-  }
   return design
 }

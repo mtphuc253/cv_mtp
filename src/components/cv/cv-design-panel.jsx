@@ -300,6 +300,7 @@ export function CvDesignPanels({ cv, setCv, onAddSection, onDeleteSection }) {
         {choice("nameStyle", "Name", 3)}
         {choice("headingStyle", "Section headings", 3)}
         <Toggle label="Uppercase headings" checked={design.uppercase} onChange={(uppercase) => setDesign({ uppercase })} />
+        <Toggle label="Uppercase entry titles" checked={design.entryUppercase} onChange={(entryUppercase) => setDesign({ entryUppercase })} />
         {choice("bulletStyle", "Bullets", 4)}
         {slider("bulletIndent")}
         {slider("bulletGap")}
@@ -325,7 +326,7 @@ export function CvDesignPanels({ cv, setCv, onAddSection, onDeleteSection }) {
         )}
         {choice("contactStyle", "Contact line")}
         {choice("entryHeader", "Entry header")}
-        {choice("companyStyle", "Company name")}
+        {slider("entryBoost")}
         {choice("entryStyle", "Entries")}
         {choice("photoShape", "Photo shape")}
         {slider("margin")}
