@@ -32,7 +32,8 @@ export const profile = {
 //
 // Optional extras shown on the card:
 //   link    company website (also gives the "Visit" button)
-//   images  screenshots of it: { src, alt, caption, url } — `url` is only the label in the browser frame
+//   images  screenshots of it: { src, alt, caption, width, height, url? } — `url` is only the label in
+//           the browser frame (the company's domain when left out)
 //   stats   headline numbers for a flat list; groups use their own `metric` instead, and become tabs
 export const experiences = [
   {
@@ -41,8 +42,36 @@ export const experiences = [
     company: "Freshdi - Global B2B Marketplace",
     location: "Ho Chi Minh City, Vietnam",
     link: "https://freshdi.com/",
-    // freshdi.com sits behind a Cloudflare bot check, so no screenshot yet: add { src, alt, caption, url } entries here.
-    images: [],
+    images: [
+      {
+        src: "/companies/freshdi/marketplace-home.webp",
+        alt: "Freshdi marketplace home page",
+        caption: "Marketplace home",
+        width: 1440,
+        height: 700,
+      },
+      {
+        src: "/companies/freshdi/buyer-products.webp",
+        alt: "Freshdi buyer view: product search and suggested products",
+        caption: "Buyer view: products",
+        width: 1440,
+        height: 700,
+      },
+      {
+        src: "/companies/freshdi/supplier-buying-leads.webp",
+        alt: "Freshdi supplier view: buying leads (RFQs)",
+        caption: "Supplier view: buying leads",
+        width: 1440,
+        height: 700,
+      },
+      {
+        src: "/companies/freshdi/blog-events.webp",
+        alt: "Freshdi Blog and Events website",
+        caption: "Blog & Events site",
+        width: 1440,
+        height: 700,
+      },
+    ],
     groups: [
       {
         metric: { value: "12x", label: "New users" },
@@ -105,12 +134,16 @@ export const experiences = [
         alt: "HungPhuc Construction website home page",
         caption: "Company website",
         url: "hungphuc.io.vn",
+        width: 1280,
+        height: 808,
       },
       {
         src: "/companies/hungphuc/cost-estimator.webp",
         alt: "HungPhuc Construction AI cost estimator page",
         caption: "AI cost estimator",
         url: "hungphuc.io.vn/bang-gia",
+        width: 1280,
+        height: 808,
       },
     ],
     stats: [

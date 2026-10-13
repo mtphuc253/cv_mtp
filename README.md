@@ -47,7 +47,7 @@ Import the repo in Vercel and add `GEMINI_API_KEY` under Settings → Environmen
 - `public/MaiTanPhuc_Fullstack_Software_Engineer.pdf` — the CV behind every "Download CV" button
   (`profile.cvUrl`). Replace the file when the CV changes, and keep `src/data/profile.js` in sync with it.
 - `public/companies/*` — website screenshots shown on the "Work experience" cards (see `images` in
-  `src/data/profile.js`). Freshdi has none yet: freshdi.com blocks automated browsers, so add one by hand.
+  `src/data/profile.js`). freshdi.com blocks automated browsers, so its screenshots are taken by hand.
 - `public/tech/*` — technology logos shown on the chips. Most come from Simple Icons (dark logos are
   recoloured to stay visible on the dark chips); AWS, OpenAI, Excel (XLSX), Zustand and Sentence
   Transformers come from other sets. To add one, drop the file here and register its names in

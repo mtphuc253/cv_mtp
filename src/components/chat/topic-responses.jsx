@@ -260,7 +260,7 @@ function StatTile({ value, label, active, onClick }) {
 }
 
 // A screenshot in a browser window, so a company site reads as a site and not as a loose picture.
-function BrowserShot({ image, onOpen }) {
+function BrowserShot({ image, host, onOpen }) {
   return (
     <figure>
       <button
@@ -277,10 +277,10 @@ function BrowserShot({ image, onOpen }) {
           </div>
           <div className="flex min-w-0 flex-1 items-center gap-1.5 rounded-md bg-[#131314] px-2.5 py-1 text-[11px] text-white/70">
             <Lock className="size-3 shrink-0" />
-            <span className="truncate">{image.url}</span>
+            <span className="truncate">{image.url ?? host}</span>
           </div>
         </div>
-        <div className="relative aspect-[1280/808] overflow-hidden">
+        <div className="relative overflow-hidden" style={{ aspectRatio: `${image.width} / ${image.height}` }}>
           <Image
             src={image.src}
             alt={image.alt}
@@ -364,7 +364,7 @@ function ExperienceCard({ exp }) {
         {images.length > 0 && (
           <div className="mb-5 grid gap-4 sm:grid-cols-2">
             {images.map((image) => (
-              <BrowserShot key={image.src} image={image} onOpen={() => setSelected(image)} />
+              <BrowserShot key={image.src} image={image} host={hostOf(exp.link)} onOpen={() => setSelected(image)} />
             ))}
           </div>
         )}
