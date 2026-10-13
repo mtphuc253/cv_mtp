@@ -9,7 +9,7 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Phuc AI — Mai Tan Phuc's Portfolio",
   description:
-    "Chat with Phuc AI to explore the experience, projects and skills of Mai Tan Phuc, a Full-Stack Developer (ReactJS / NodeJS).",
+    "Chat with Phuc AI to explore the experience, projects and skills of Mai Tan Phuc, a Full-Stack Software Engineer building AI-powered web products with Next.js, React, Node.js and Python.",
 };
 
 export default function RootLayout({ children }) {

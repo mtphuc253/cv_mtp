@@ -20,7 +20,7 @@ Không có backend riêng: app đã có phần server (`src/app/api/chat/route.j
 - **Cách chat hoạt động**: `src/hooks/use-chat.js` giữ state các cuộc trò chuyện. 7 mục sidebar là hội thoại dựng sẵn (`src/data/topics.js`, nội dung ở `src/data/profile.js`, card ở `src/components/chat/topic-responses.jsx`). Khi người xem gõ câu hỏi, client gọi `POST /api/chat`, route này gọi Gemini (`src/lib/gemini.js`), stream chữ về. System prompt ở `src/lib/chat-prompt.js` chỉ cho trả lời về CV.
 - **Chạy/kiểm tra**: `npm run dev`, `npm run lint`, `npm run build`. Trước khi push nên build sạch từ bản clone mới.
 - **Quy ước**: chủ repo nhắn tiếng Việt, hãy trả lời tiếng Việt; code, tên file, commit message và chữ trên giao diện viết tiếng Anh. Commit theo kiểu `feat:`, `fix:`, `refactor:`. Chỉ commit/push khi được yêu cầu.
-- **Việc tồn đọng không thuộc tracking**: link CV (`profile.cvUrl`) trỏ về Firebase đã bị khóa (HTTP 402), nút Download CV đang hỏng. Cần file PDF mới (ví dụ `public/cv.pdf`, đặt `cvUrl: "/cv.pdf"`).
+- **Link CV**: `profile.cvUrl` giờ trỏ tới `/MaiTanPhuc_Fullstack_Software_Engineer.pdf` trong `public/` (đã hết phụ thuộc Firebase). Khi CV đổi, thay file PDF và cập nhật `src/data/profile.js` cho khớp.
 
 ## 3. Theo dõi được gì, và không được gì
 | Nhóm | Ghi được | Ghi chú |

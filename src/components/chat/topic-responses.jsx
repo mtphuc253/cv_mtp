@@ -20,15 +20,18 @@ import {
   Server,
   Database,
   Cloud,
+  Sparkles,
   X,
 } from "lucide-react"
 import { ProfileAvatar } from "@/components/chat/profile-avatar"
+import { TechChip } from "@/components/chat/tech-chip"
 import { useSmoothText } from "@/hooks/use-smooth-text"
 import { cn } from "@/lib/utils"
 import {
   certificates,
   education,
   english,
+  experienceGroups,
   experiences,
   profile,
   projects,
@@ -72,14 +75,6 @@ function Card({ children, className }) {
     >
       {children}
     </div>
-  )
-}
-
-function Chip({ children }) {
-  return (
-    <span className="inline-flex items-center rounded-full bg-secondary px-3 py-1 text-[13px] font-medium text-white">
-      {children}
-    </span>
   )
 }
 
@@ -217,9 +212,10 @@ function AboutResponse() {
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         {[
           { title: "Front-end", icon: Globe, text: profile.frontend },
-          { title: "Back-end", icon: Server, text: profile.backend },
+          { title: "Back-end & Data", icon: Server, text: profile.backend },
+          { title: "AI & Automation", icon: Sparkles, text: profile.ai },
         ].map(({ title, icon: Icon, text }, i) => (
-          <Reveal key={title} delay={0.16 + i * 0.08}>
+          <Reveal key={title} delay={0.16 + i * 0.08} className="sm:last:col-span-2">
             <Card className="h-full p-5">
               <div className="mb-2 flex items-center gap-2 font-semibold">
                 <Icon className="size-4 text-[#a8c7fa]" />
@@ -257,10 +253,15 @@ function ExperienceResponse() {
                   {exp.period}
                 </div>
               </div>
-              <Bullets items={exp.description} />
-              <div className="mt-4 flex flex-wrap gap-2">
+              {experienceGroups(exp).map((group, groupIndex) => (
+                <div key={group.heading ?? groupIndex} className={groupIndex > 0 ? "mt-5" : undefined}>
+                  {group.heading && <div className="mb-2.5 font-semibold leading-6">{group.heading}</div>}
+                  <Bullets items={group.bullets} />
+                </div>
+              ))}
+              <div className="mt-5 flex flex-wrap gap-2">
                 {exp.technologies.map((tech) => (
-                  <Chip key={tech}>{tech}</Chip>
+                  <TechChip key={tech}>{tech}</TechChip>
                 ))}
               </div>
             </Card>
@@ -319,9 +320,7 @@ function ProjectCard({ project }) {
               </dt>
               <dd className="flex flex-wrap gap-1.5">
                 {project.technologies[key].map((tech) => (
-                  <Chip key={tech}>
-                    {tech}
-                  </Chip>
+                  <TechChip key={tech}>{tech}</TechChip>
                 ))}
               </dd>
             </div>
@@ -405,7 +404,7 @@ function SkillsResponse() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {group.items.map((item) => (
-                    <Chip key={item}>{item}</Chip>
+                    <TechChip key={item}>{item}</TechChip>
                   ))}
                 </div>
               </div>
@@ -440,7 +439,7 @@ function EducationResponse() {
   return (
     <div>
       <Reveal>
-        <Intro>{"Phuc is studying Software Engineering at FPT University."}</Intro>
+        <Intro>{"Phuc graduated with a Bachelor of Software Engineering from FPT University."}</Intro>
       </Reveal>
       <Reveal delay={0.08}>
         <Card>
@@ -448,7 +447,9 @@ function EducationResponse() {
             <div>
               <h3 className="text-lg font-bold">{education.degree}</h3>
               <div className="font-medium text-[#a8c7fa]">{education.school}</div>
-              <div className="text-sm text-white">{education.location}</div>
+              <div className="text-sm text-white">
+                {education.location} · GPA {education.gpa}
+              </div>
             </div>
             <div className="inline-flex items-center gap-2 rounded-full bg-secondary px-3.5 py-1.5 text-[13px] text-white">
               <CalendarDays className="size-3.5 text-[#a8c7fa]" />

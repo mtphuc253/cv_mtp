@@ -44,9 +44,12 @@ Import the repo in Vercel and add `GEMINI_API_KEY` under Settings → Environmen
 - `public/avatar.webp` — portrait used in the profile card and the sidebar.
 - `public/projects/*` — project screenshots shown in the "Highlight projects" answer.
 - `public/logo.png` — the MTP logo (cropped from `src/app/favicon.ico`).
+- `public/MaiTanPhuc_Fullstack_Software_Engineer.pdf` — the CV behind every "Download CV" button
+  (`profile.cvUrl`). Replace the file when the CV changes, and keep `src/data/profile.js` in sync with it.
+- `public/tech/*` — technology logos shown on the chips. Most come from Simple Icons (dark logos are
+  recoloured to stay visible on the dark chips); AWS, OpenAI, Excel (XLSX), Zustand and Sentence
+  Transformers come from other sets. To add one, drop the file here and register its names in
+  `src/components/chat/tech-chip.jsx`; a name without a logo renders as a plain chip.
 
 The avatar and screenshots used to live on Firebase Storage, which now returns HTTP 402; they were
 recovered from Next's image cache and are now served from `public/`.
-
-**Still broken:** `profile.cvUrl` in `src/data/profile.js` points at a PDF on that same Firebase bucket,
-so "Download CV" fails. Host the PDF again (e.g. `public/cv.pdf`) and set `cvUrl: "/cv.pdf"`.

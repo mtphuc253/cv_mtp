@@ -2,6 +2,7 @@ import {
   certificates,
   education,
   english,
+  experienceGroups,
   experiences,
   profile,
   projects,
@@ -27,12 +28,16 @@ function profileText() {
   lines.push(`Summary: ${profile.summary}`)
   lines.push(`Front-end: ${profile.frontend}`)
   lines.push(`Back-end: ${profile.backend}`)
+  lines.push(`AI & automation: ${profile.ai}`)
   lines.push(`Personal maxim: "${profile.maxim}"`)
 
   lines.push("\nWORK EXPERIENCE")
   for (const e of experiences) {
     lines.push(`- ${e.title} at ${e.company}, ${e.location} (${e.period}). Technologies: ${e.technologies.join(", ")}`)
-    for (const d of e.description) lines.push(`    * ${d}`)
+    for (const group of experienceGroups(e)) {
+      if (group.heading) lines.push(`    ${group.heading}`)
+      for (const d of group.bullets) lines.push(`    * ${d}`)
+    }
   }
 
   lines.push("\nPROJECTS")
@@ -52,7 +57,9 @@ function profileText() {
   for (const p of english.points) lines.push(`    * ${p}`)
 
   lines.push("\nEDUCATION")
-  lines.push(`- ${education.degree}, ${education.school}, ${education.location} (${education.period})`)
+  lines.push(
+    `- ${education.degree}, ${education.school}, ${education.location} (${education.period}), GPA ${education.gpa}`,
+  )
   for (const h of education.highlights) lines.push(`    * ${h}`)
 
   lines.push("\nCERTIFICATES")
