@@ -1,0 +1,44 @@
+/*
+  The CV sheet is always white paper, whatever the app theme is. On screen it is a
+  210mm-wide sheet whose padding is the page margin; when printing, that padding is
+  dropped and the same value becomes the @page margin (set from cv-builder.jsx, since
+  @page cannot read CSS variables), so every page gets identical margins.
+*/
+.cv-paper {
+  /* Text colours. A section on a dark background (solid sidebar, banner) redefines them. */
+  --cv-text: #262626;
+  --cv-strong: #171717;
+  --cv-soft: #404040;
+  --cv-muted: #525252;
+  --cv-faint: #8a8a8a;
+  --cv-rule: #d4d4d4;
+
+  width: 210mm;
+  min-height: 297mm;
+  box-sizing: border-box;
+  padding: var(--cv-margin, 14mm);
+  background: #fff;
+  color: var(--cv-text);
+  font-size: var(--cv-font-size, 9.5pt);
+  line-height: var(--cv-line-height, 1.4);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.cv-paper a {
+  color: inherit;
+  text-decoration: none;
+}
+
+@media print {
+  html,
+  body {
+    background: #fff !important;
+  }
+
+  .cv-print .cv-paper {
+    width: auto;
+    min-height: 0;
+    padding: 0;
+  }
+}
