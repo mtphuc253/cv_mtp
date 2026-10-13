@@ -7,6 +7,7 @@ import { motion } from "framer-motion"
 import {
   Award,
   CalendarDays,
+  ChevronDown,
   ChevronRight,
   Download,
   ExternalLink,
@@ -17,6 +18,7 @@ import {
   Lock,
   Mail,
   MapPin,
+  MousePointerClick,
   Phone,
   Server,
   Database,
@@ -235,27 +237,13 @@ function AboutResponse() {
 
 const hostOf = (url) => new URL(url).hostname.replace(/^www\./, "")
 
-// A headline number. Interactive when `onClick` is given (the Freshdi tabs), otherwise plain.
-function StatTile({ value, label, active, onClick }) {
-  const className = cn(
-    "rounded-2xl px-3.5 py-3 text-left transition-colors max-sm:last:odd:col-span-2",
-    active ? "bg-[#004a77]" : "bg-secondary",
-    onClick && !active && "hover:bg-accent",
-  )
-  const content = (
-    <>
-      <div className={cn("text-2xl font-bold leading-none tracking-tight", active ? "text-[#c2e7ff]" : "text-[#a8c7fa]")}>
-        {value}
-      </div>
+// A headline number with what it measures underneath.
+function StatTile({ value, label, className }) {
+  return (
+    <div className={cn("rounded-2xl bg-secondary px-3.5 py-3", className)}>
+      <div className="text-2xl font-bold leading-none tracking-tight text-[#a8c7fa]">{value}</div>
       <div className="mt-1.5 text-xs leading-4 text-white/80">{label}</div>
-    </>
-  )
-  return onClick ? (
-    <button type="button" onClick={onClick} aria-pressed={active} className={className}>
-      {content}
-    </button>
-  ) : (
-    <div className={className}>{content}</div>
+    </div>
   )
 }
 
@@ -295,23 +283,55 @@ function BrowserShot({ image, host, onOpen }) {
   )
 }
 
-// Groups with a `metric` become tabs: the numbers up front, the detail one click away.
+// A StatTile that acts as a tab: bordered, with an arrow and a pointer cursor, and the selected
+// one points down at the panel it controls.
+function TabTile({ value, label, selected, onSelect }) {
+  return (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={selected}
+      onClick={onSelect}
+      className={cn(
+        "relative cursor-pointer rounded-2xl border px-3.5 py-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-[#a8c7fa] max-sm:last:odd:col-span-2",
+        selected
+          ? "border-[#a8c7fa]/50 bg-[#004a77] after:absolute after:-bottom-[7px] after:left-1/2 after:size-3 after:-translate-x-1/2 after:rotate-45 after:bg-[#004a77]"
+          : "border-white/10 bg-secondary hover:border-[#a8c7fa]/40 hover:bg-accent",
+      )}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <span className={cn("text-2xl font-bold leading-none tracking-tight", selected ? "text-[#c2e7ff]" : "text-[#a8c7fa]")}>
+          {value}
+        </span>
+        <ChevronDown className={cn("size-4 shrink-0", selected ? "text-[#c2e7ff]" : "text-white/50")} />
+      </div>
+      <div className="mt-1.5 text-xs leading-4 text-white/80">{label}</div>
+    </button>
+  )
+}
+
+// Groups with a `metric` become tabs: the numbers up front, what was built behind each one below.
 function ImpactTabs({ groups }) {
   const [active, setActive] = useState(0)
   const group = groups[active]
   return (
     <div>
-      <div className="grid grid-cols-2 gap-2 sm:auto-cols-fr sm:grid-flow-col">
+      <div className="mb-2.5 flex items-center gap-1.5 text-xs text-white/70">
+        <MousePointerClick className="size-3.5 text-[#a8c7fa]" />
+        Select a number to see what was built behind it
+      </div>
+      <div role="tablist" className="grid grid-cols-2 gap-2 sm:auto-cols-fr sm:grid-flow-col">
         {groups.map((g, i) => (
-          <StatTile key={g.metric.label} {...g.metric} active={i === active} onClick={() => setActive(i)} />
+          <TabTile key={g.metric.label} {...g.metric} selected={i === active} onSelect={() => setActive(i)} />
         ))}
       </div>
       <motion.div
         key={active}
+        role="tabpanel"
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25, ease: "easeOut" }}
-        className="mt-5"
+        className="mt-4 rounded-2xl border border-white/10 p-4 sm:p-5"
       >
         <div className="mb-2.5 font-semibold leading-6">{group.heading}</div>
         <Bullets items={group.bullets} />
