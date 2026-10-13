@@ -34,7 +34,9 @@ export const profile = {
 //   link    company website (also gives the "Visit" button)
 //   images  screenshots of it: { src, alt, caption, width, height, url? } — `url` is only the label in
 //           the browser frame (the company's domain when left out)
-//   stats   headline numbers for a flat list; groups use their own `metric` instead, and become tabs
+//   stats   headline numbers for a flat list
+//   groups  that carry a `metric` become tabs instead: `tab` is the short name on the tab, `title` heads the
+//           panel, and `icon` is one of product | ai | content | data | seo (see topic-responses.jsx)
 export const experiences = [
   {
     period: "SEP 2025 — PRESENT",
@@ -74,6 +76,9 @@ export const experiences = [
     ],
     groups: [
       {
+        tab: "Core product",
+        title: "Core product features for suppliers and buyers",
+        icon: "product",
         metric: { value: "12x", label: "New users" },
         heading: "Built core product features end to end for suppliers and buyers, driving 12x growth in new users:",
         bullets: [
@@ -84,6 +89,9 @@ export const experiences = [
         ],
       },
       {
+        tab: "AI features",
+        title: "AI-first workflow, agents and MCP servers",
+        icon: "ai",
         metric: { value: "17", label: "MCP tools" },
         heading: "Worked AI-first every day and built AI-powered product features:",
         bullets: [
@@ -94,6 +102,9 @@ export const experiences = [
         ],
       },
       {
+        tab: "Content",
+        title: "Automated blog, social and image content for Marketing",
+        icon: "content",
         metric: { value: "5x", label: "Marketing productivity" },
         heading: "Automated content creation, boosting Marketing productivity 5x:",
         bullets: [
@@ -103,6 +114,9 @@ export const experiences = [
         ],
       },
       {
+        tab: "Data",
+        title: "Data pipelines and lead collection (FFrape) for Sales",
+        icon: "data",
         metric: { value: "3x", label: "Sales team speed" },
         heading: "Built data pipelines and automated customer data collection (FFrape), making the Sales team 3x faster:",
         bullets: [
@@ -111,6 +125,9 @@ export const experiences = [
         ],
       },
       {
+        tab: "SEO & speed",
+        title: "Technical SEO and page speed",
+        icon: "seo",
         metric: { value: "2x", label: "SEO results" },
         heading: "Improved technical SEO and page speed, doubling SEO results (2x):",
         bullets: [

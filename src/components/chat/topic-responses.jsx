@@ -18,13 +18,17 @@ import {
   Lock,
   Mail,
   MapPin,
+  Megaphone,
   MousePointerClick,
+  Package,
   Phone,
+  Search,
   Server,
   Database,
   Cloud,
   Sparkles,
   X,
+  Bot,
 } from "lucide-react"
 import { ProfileAvatar } from "@/components/chat/profile-avatar"
 import { TechChip } from "@/components/chat/tech-chip"
@@ -285,7 +289,7 @@ function BrowserShot({ image, host, onOpen }) {
 
 // A StatTile that acts as a tab: bordered, with an arrow and a pointer cursor, and the selected
 // one points down at the panel it controls.
-function TabTile({ value, label, selected, onSelect }) {
+function TabTile({ tab, value, label, selected, onSelect }) {
   return (
     <button
       type="button"
@@ -293,36 +297,40 @@ function TabTile({ value, label, selected, onSelect }) {
       aria-selected={selected}
       onClick={onSelect}
       className={cn(
-        "relative cursor-pointer rounded-2xl border px-3.5 py-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-[#a8c7fa] max-sm:last:odd:col-span-2",
+        "relative flex cursor-pointer flex-col rounded-2xl border px-3.5 py-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-[#a8c7fa] max-sm:last:odd:col-span-2",
         selected
           ? "border-[#a8c7fa]/50 bg-[#004a77] after:absolute after:-bottom-[7px] after:left-1/2 after:size-3 after:-translate-x-1/2 after:rotate-45 after:bg-[#004a77]"
           : "border-white/10 bg-secondary hover:border-[#a8c7fa]/40 hover:bg-accent",
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <span className={cn("text-2xl font-bold leading-none tracking-tight", selected ? "text-[#c2e7ff]" : "text-[#a8c7fa]")}>
-          {value}
-        </span>
+        <span className="min-h-8 text-[11px] font-semibold uppercase leading-4 tracking-wider text-white">{tab}</span>
         <ChevronDown className={cn("size-4 shrink-0", selected ? "text-[#c2e7ff]" : "text-white/50")} />
+      </div>
+      <div className={cn("mt-2 text-2xl font-bold leading-none tracking-tight", selected ? "text-[#c2e7ff]" : "text-[#a8c7fa]")}>
+        {value}
       </div>
       <div className="mt-1.5 text-xs leading-4 text-white/80">{label}</div>
     </button>
   )
 }
 
-// Groups with a `metric` become tabs: the numbers up front, what was built behind each one below.
+const GROUP_ICONS = { product: Package, ai: Bot, content: Megaphone, data: Database, seo: Search }
+
+// Groups with a `metric` become tabs: the area and its number up front, what was built below.
 function ImpactTabs({ groups }) {
   const [active, setActive] = useState(0)
   const group = groups[active]
+  const GroupIcon = GROUP_ICONS[group.icon] ?? Sparkles
   return (
     <div>
       <div className="mb-2.5 flex items-center gap-1.5 text-xs text-white/70">
         <MousePointerClick className="size-3.5 text-[#a8c7fa]" />
-        Select a number to see what was built behind it
+        Select an area to see what was built there
       </div>
       <div role="tablist" className="grid grid-cols-2 gap-2 sm:auto-cols-fr sm:grid-flow-col">
         {groups.map((g, i) => (
-          <TabTile key={g.metric.label} {...g.metric} selected={i === active} onSelect={() => setActive(i)} />
+          <TabTile key={g.tab} tab={g.tab} {...g.metric} selected={i === active} onSelect={() => setActive(i)} />
         ))}
       </div>
       <motion.div
@@ -333,7 +341,18 @@ function ImpactTabs({ groups }) {
         transition={{ duration: 0.25, ease: "easeOut" }}
         className="mt-4 rounded-2xl border border-white/10 p-4 sm:p-5"
       >
-        <div className="mb-2.5 font-semibold leading-6">{group.heading}</div>
+        <div className="mb-3 flex items-center gap-3">
+          <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#004a77] text-[#c2e7ff]">
+            <GroupIcon className="size-5" />
+          </span>
+          <div className="min-w-0">
+            <h4 className="text-base font-bold leading-snug">{group.title}</h4>
+            <div className="text-xs text-[#a8c7fa]">
+              {group.metric.value} · {group.metric.label}
+            </div>
+          </div>
+        </div>
+        <p className="mb-3 text-sm leading-6 text-white/80">{group.heading}</p>
         <Bullets items={group.bullets} />
       </motion.div>
     </div>
