@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { buildSystemPrompt, OFF_TOPIC_REPLY } from "@/lib/chat-prompt"
-import { DEFAULT_MODEL, openGeminiStream, sseToTextStream } from "@/lib/gemini"
+import { getApiKeys, getModels, openGemini, sseToTextStream } from "@/lib/gemini"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -57,8 +57,8 @@ function parseMessages(body) {
 }
 
 export async function POST(request) {
-  const apiKey = process.env.GEMINI_API_KEY
-  if (!apiKey) return fail("The AI assistant isn't configured yet. Please try again later.", 503)
+  const apiKeys = getApiKeys()
+  if (!apiKeys.length) return fail("The AI assistant isn't configured yet. Please try again later.", 503)
 
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() || "unknown"
   if (isRateLimited(ip)) return fail("You're asking a lot of questions! Please wait a few minutes and try again.", 429)
@@ -75,9 +75,9 @@ export async function POST(request) {
 
   let upstream
   try {
-    upstream = await openGeminiStream({
-      apiKey,
-      model: process.env.GEMINI_MODEL || DEFAULT_MODEL,
+    upstream = await openGemini({
+      apiKeys,
+      models: getModels(),
       systemPrompt: buildSystemPrompt(),
       messages,
       signal: request.signal,

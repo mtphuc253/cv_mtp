@@ -16,10 +16,16 @@ npm run dev
 
 Open http://localhost:3000.
 
-| Variable         | Required | Notes                                                                  |
-| ---------------- | -------- | ---------------------------------------------------------------------- |
-| `GEMINI_API_KEY` | yes      | Create one at https://aistudio.google.com/apikey. Server-side only.     |
-| `GEMINI_MODEL`   | no       | Defaults to `gemini-3.5-flash-lite` (free tier). Override if retired.   |
+| Variable                 | Required | Notes                                                                                   |
+| ------------------------ | -------- | --------------------------------------------------------------------------------------- |
+| `GEMINI_API_KEY`         | yes      | Create one at https://aistudio.google.com/apikey. Server-side only.                      |
+| `GEMINI_API_KEYS`        | no       | Extra keys, comma separated. Used in turn when a key runs out of quota (see below).      |
+| `GEMINI_MODEL`           | no       | Defaults to `gemini-3.1-flash-lite` (free tier). Override if retired.                    |
+| `GEMINI_FALLBACK_MODELS` | no       | Defaults to `gemini-3.5-flash-lite`. Comma separated; set it empty to turn fallback off. |
+
+If Gemini is overloaded (5xx) or out of quota (429), `src/lib/gemini.js` retries with the next model
+and key, at most 4 attempts per question. Google counts quota per project and per model, so extra
+keys only help when they come from different projects; a second model is the simpler extra headroom.
 
 ## Where things live
 
